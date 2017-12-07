@@ -1,31 +1,38 @@
 package com.example.android.movies1.Utils;
 
 import android.content.Context;
-import android.graphics.Movie;
 import android.util.Log;
-
+import com.example.android.movies1.Movie;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by batu on 05/12/17.
  */
 
-public class TheMovieDBJsonUtils {
+ public class TheMovieDBJsonUtils {
     private static final String TAG = TheMovieDBJsonUtils.class.getSimpleName();
 
-    public String[] simpleJsonMovieDataStringsFromJson(Context context, String movieJsonString)
+    private static final String IMG_URL = "http://image.tmdb.org/t/p/";
+
+//    public TheMovieDBJsonUtils(){
+//    }
+
+    public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieJsonString)
             throws JSONException {
+
+        ArrayList movies;
+        movies = new ArrayList();
 
         final String ROOT = "page";
         final String RESULTS = "results";
         final String CONRESULT = "success";
         final String JSONMSG = "status_message";
 
-        String[] parsedMovieData = null;
         JSONObject moviesJson = new JSONObject(movieJsonString);
-
 
         /* Is there an error? */
         if (moviesJson.has(CONRESULT)) {
@@ -36,19 +43,28 @@ public class TheMovieDBJsonUtils {
             }
         }
 
-        JSONArray moviesArray = moviesJson.getJSONArray(RESULTS);
+        JSONArray JSONMoviesArray = moviesJson.getJSONArray(RESULTS);
 
-        for (int i = 0; i < moviesArray.length(); i++) {
-            JSONObject movie = moviesArray.getJSONObject(i);
-            Movie movie_object = new Movie(movie);
-            movies.add(movie_object);
+        for (int i = 0; i < JSONMoviesArray.length(); i++) {
+            JSONObject movie = JSONMoviesArray.getJSONObject(i);
+            String posterPath = movie.getString("poster_path");
+            String backdropPath = movie.getString("backdrop_path");
+            Log.i(TAG, movie.getString("original_title"));
+            Log.i(TAG, movie.getString("vote_average"));
+            Log.i(TAG, movie.getString("release_date"));
 
+            Movie movie_obj = new Movie();
+            movie_obj.setPOSTER_PATH(IMG_URL + "w185/" + posterPath);
+            movie_obj.setBACKDROP_PATH(IMG_URL + "w500/" + backdropPath);
+            movie_obj.setID(movie.getString("id"));
+            movie_obj.setOVERVIEW(movie.getString("overview"));
+            movie_obj.setRELEASE_DATE(movie.getString("release_date"));
+            movie_obj.setTITLE(movie.getString("original_title"));
+            movie_obj.setVOTE_AVERAGE(movie.getString("vote_average"));
+            movies.add(movie_obj);
         }
 
-        return moviesArray;
-
-
-
+        return movies;
 
     }
 }
