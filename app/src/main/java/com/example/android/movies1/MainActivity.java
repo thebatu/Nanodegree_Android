@@ -22,7 +22,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    Context context;
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
 
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(getApplicationContext());
         mRecyclerView.setAdapter(mMovieAdapter);
 
         loadMoviesData();

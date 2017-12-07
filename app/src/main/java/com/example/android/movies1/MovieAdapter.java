@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     private Context getContext() {
         return mContext;
+    }
+
+    public MovieAdapter (Context con){
+        mContext = con;
     }
 
     @Override
@@ -44,7 +50,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onBindViewHolder(MovieViewHolder holder, int position) {
 
         Movie movie = mMovies.get(position);
-        holder.listMovieNumberView.setText(movie);
+        Picasso.with(mContext).load(movie.getBACKDROP_PATH()).into(holder.listMovieNumberView);
 
     }
 
