@@ -15,13 +15,11 @@ import java.util.List;
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-    ImageView imageView;
+    ImageView mImageView;
     private int mNumberItems;
 
     private List<Movie> mMovies;
     private Context mContext;
-
-    // Pass in the movies array into the constructor
 
 
     private Context getContext() {
@@ -46,7 +44,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onBindViewHolder(MovieViewHolder holder, int position) {
 
         Movie movie = mMovies.get(position);
-        holder.imageView.setText(movie);
+        holder.listMovieNumberView.setText(movie);
 
     }
 

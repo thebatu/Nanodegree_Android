@@ -39,16 +39,11 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-
         mMovieAdapter = new MovieAdapter();
-
-
         mRecyclerView.setAdapter(mMovieAdapter);
 
         loadMoviesData();
-
     }
-
 
     private void loadMoviesData() {
         showMoviesDataView();
