@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             if (movieList != null) {
                 showMoviesDataView();
                 // COMPLETED (45) Instead of iterating through every string, use mForecastAdapter.setWeatherData and pass in the weather data
-                mMovieAdapter.setWeatherData(movieList);
+                mMovieAdapter.setMovieData(movieList);
             } else {
                 //showErrorMessage();
             }

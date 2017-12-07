@@ -53,7 +53,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return mMovies.size();
     }
 
-    public void setWeatherData(ArrayList MoviesData) {
+    public void setMovieData(ArrayList MoviesData) {
         mMovies = MoviesData;
     }
 
