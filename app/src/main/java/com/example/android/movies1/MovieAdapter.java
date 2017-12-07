@@ -28,8 +28,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return mContext;
     }
 
-    public MovieAdapter (Context con){
+    public MovieAdapter (Context con, ArrayList movies){
         mContext = con;
+        mMovies = movies;
     }
 
     @Override

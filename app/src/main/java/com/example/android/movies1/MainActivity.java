@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mMovieAdapter = new MovieAdapter(getApplicationContext());
-        mRecyclerView.setAdapter(mMovieAdapter);
+
 
         loadMoviesData();
     }
@@ -89,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                mMovieAdapter = new MovieAdapter(getApplicationContext(),simpleJsonMovieData);
+                mRecyclerView.setAdapter(mMovieAdapter);
                 return simpleJsonMovieData;
 
 
