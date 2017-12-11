@@ -15,27 +15,44 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    final static String baseURL = "http://image.tmdb.org/t/p/";
-    final static String baseMovieURL = "http://api.themoviedb.org/3/movie/popular?api_key=18e23d5378804a57dc5743d12472408f";
+    final static String baseMoviePOP = "http://api.themoviedb.org/3/movie/popular?api_key=18e23d5378804a57dc5743d12472408f";
+    final static String baseMovieTOP = "http://api.themoviedb.org/3/movie/top_rated?api_key=18e23d5378804a57dc5743d12472408f";
 
-    final static String SIZE = "w185";
-    static String PATH;
+//    final static String SIZE = "w185";
+//    static String PATH;
 
-    public static URL buildUrl() {
-        // COMPLETED (1) Fill in this method to build the proper Github query URL
-        Uri builtUri = Uri.parse(baseMovieURL).buildUpon()
-                //.appendQueryParameter(SIZE, SIZE)
-                //.appendQueryParameter(PATH, movieToFetch)
-                .build();
-
+    public static URL buildUrl(String baseURL) {
         URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        if (baseURL == "popular"){
+            Uri builtUri = Uri.parse(baseMoviePOP).buildUpon()
+                    //.appendQueryParameter(SIZE, SIZE)
+                    //.appendQueryParameter(PATH, movieToFetch)
+                    .build();
 
-        return url;
+
+            try {
+                url = new URL(builtUri.toString());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            return url;
+        }else {
+            Uri builtUri = Uri.parse(baseMovieTOP).buildUpon()
+                    //.appendQueryParameter(SIZE, SIZE)
+                    //.appendQueryParameter(PATH, movieToFetch)
+                    .build();
+
+
+            try {
+                url = new URL(builtUri.toString());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            return url;
+
+        }
     }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {

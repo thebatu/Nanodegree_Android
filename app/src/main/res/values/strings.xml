@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">My Movies</string>
-    <string name="Menu">Menu</string>
+    <string name="menu">Menu</string>
+    <string name="popular">Popular Movies</string>
+    <string name="top_rated">Top Rated Movies</string>
+    <string name="error_message">
+        Failed to get results. Please try again.
+    </string>
 
 </resources>

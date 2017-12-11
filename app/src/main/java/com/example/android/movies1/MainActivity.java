@@ -1,6 +1,5 @@
 package com.example.android.movies1;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.movies1.Utils.NetworkUtils;
 import com.example.android.movies1.Utils.TheMovieDBJsonUtils;
@@ -24,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
+    private TextView errText;
+    private ProgressBar mLoadingIndicator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_mainMovies);
+        errText = findViewById(R.id.tv_error_message_display);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, 2);
@@ -38,18 +43,25 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-
-
         loadMoviesData();
+        mMovieAdapter = new MovieAdapter(getApplicationContext());
+        mRecyclerView.setAdapter(mMovieAdapter);
     }
 
     private void loadMoviesData() {
+        String popular = "popular";
         showMoviesDataView();
-        new FetchMoviesTask().execute();
+        new FetchMoviesTask(popular).execute();
     }
 
     private void showMoviesDataView() {
+        errText.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage(){
+        errText.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -61,20 +73,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemSelected = item.getItemId();
-        if (menuItemSelected == R.id.menu){
-            Context context = MainActivity.this;
-            String msg = "Menu clicked";
-            Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-            return true;
+        if (menuItemSelected == R.id.top_rated){
+            showMoviesDataView();
+            new FetchMoviesTask("top_rated").execute();
+            //return true;
+        }else {
+            showMoviesDataView();
+            new FetchMoviesTask("popular").execute();
+
         }
         return super.onOptionsItemSelected(item);
     }
 
     public class FetchMoviesTask extends AsyncTask<ArrayList, Void, ArrayList> {
 
+        String movies_param;
+
+        public FetchMoviesTask(String s){
+            if (s == "top_rated") {
+                movies_param = "top_rated";
+            }else {
+                movies_param = "popular";
+            }
+
+        }
+
         @Override
         protected ArrayList doInBackground(ArrayList... ArrayList) {
-            URL MoviesRequestUrl = NetworkUtils.buildUrl();
+            URL MoviesRequestUrl = NetworkUtils.buildUrl(movies_param);
 
             try {
                 String jsonMovieResponse = NetworkUtils
@@ -88,10 +114,9 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                mMovieAdapter = new MovieAdapter(getApplicationContext(),simpleJsonMovieData);
-                mRecyclerView.setAdapter(mMovieAdapter);
+//                mMovieAdapter = new MovieAdapter(getApplicationContext(),simpleJsonMovieData);
+//                mRecyclerView.setAdapter(mMovieAdapter);
                 return simpleJsonMovieData;
-
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -103,12 +128,23 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList movieList) {
             if (movieList != null) {
+                mLoadingIndicator.setVisibility(View.INVISIBLE);
+                mRecyclerView.setVisibility(View.VISIBLE);
                 showMoviesDataView();
                 // COMPLETED (45) Instead of iterating through every string, use mForecastAdapter.setWeatherData and pass in the weather data
                 mMovieAdapter.setMovieData(movieList);
+                mMovieAdapter.notifyDataSetChanged();
             } else {
-                //showErrorMessage();
+                showErrorMessage();
             }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+
         }
     }
 }

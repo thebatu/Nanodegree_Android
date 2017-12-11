@@ -23,14 +23,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private List<Movie> mMovies;
     private Context mContext;
 
-
     private Context getContext() {
         return mContext;
     }
 
-    public MovieAdapter (Context con, ArrayList movies){
+    public MovieAdapter (Context con){
         mContext = con;
-        mMovies = movies;
+//        mMovies = movies;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public int getItemCount() {
-        return mMovies.size();
+    if (mMovies !=null) return mMovies.size(); else return 0;
     }
 
     public void setMovieData(ArrayList MoviesData) {
