@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView errText;
     private ProgressBar mLoadingIndicator;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         if (menuItemSelected == R.id.top_rated){
             showMoviesDataView();
             new FetchMoviesTask("top_rated").execute();
-            //return true;
+//            return true;
         }else {
             showMoviesDataView();
             new FetchMoviesTask("popular").execute();
@@ -85,17 +84,18 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
     public class FetchMoviesTask extends AsyncTask<ArrayList, Void, ArrayList> {
 
         String movies_param;
 
-        public FetchMoviesTask(String s){
+        private FetchMoviesTask(String s){
             if (s == "top_rated") {
                 movies_param = "top_rated";
             }else {
                 movies_param = "popular";
             }
-
         }
 
         @Override
