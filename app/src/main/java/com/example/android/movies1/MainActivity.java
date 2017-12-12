@@ -1,5 +1,4 @@
 package com.example.android.movies1;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.movies1.Utils.NetworkUtils;
 import com.example.android.movies1.Utils.TheMovieDBJsonUtils;
@@ -20,12 +20,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener{
 
+    private String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
     private ProgressBar mLoadingIndicator;
+    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
 
         loadMoviesData();
-        mMovieAdapter = new MovieAdapter(getApplicationContext());
+        mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
         mRecyclerView.setAdapter(mMovieAdapter);
     }
 
@@ -84,6 +86,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onMovieItemClick(int clickedItemPosition) {
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        String toaseMessage = "Item #" + clickedItemPosition + "clicked";
+        mToast = Toast.makeText(this, toaseMessage, Toast.LENGTH_LONG);
+
+        mToast.show();
+
+    }
 
 
     public class FetchMoviesTask extends AsyncTask<ArrayList, Void, ArrayList> {
@@ -122,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 return null;
             }
-
         }
 
         @Override

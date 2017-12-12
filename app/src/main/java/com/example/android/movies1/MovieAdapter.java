@@ -23,13 +23,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private List<Movie> mMovies;
     private Context mContext;
 
+    private final MovieClickListener mOnMovieClickListener;
+
     private Context getContext() {
         return mContext;
     }
 
-    public MovieAdapter (Context con){
+    public MovieAdapter (Context con, MovieClickListener listener){
         mContext = con;
+        mOnMovieClickListener = listener;
 //        mMovies = movies;
+    }
+
+    public interface MovieClickListener{
+        void onMovieItemClick (int clickedItemPosition);
     }
 
     @Override
@@ -64,13 +71,22 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder  {
+
+    //-----------------------
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
         ImageView listMovieNumberView;
 
         public MovieViewHolder(View itemView) {
             super(itemView);
             listMovieNumberView = (ImageView) itemView.findViewById(R.id.im_item_number);
+            itemView.setOnClickListener(this);
 
+        }
+
+        @Override
+        public void onClick(View v) {
+            int clickedPosition = getAdapterPosition();
+            mOnMovieClickListener.onMovieItemClick(clickedPosition);
         }
     }
 

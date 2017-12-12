@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
  public class TheMovieDBJsonUtils {
     private static final String TAG = TheMovieDBJsonUtils.class.getSimpleName();
-
     private static final String IMG_URL = "http://image.tmdb.org/t/p/";
 
 //    public TheMovieDBJsonUtils(){
@@ -24,8 +23,7 @@ import java.util.ArrayList;
     public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieJsonString)
             throws JSONException {
 
-        ArrayList movies;
-        movies = new ArrayList();
+        ArrayList movies = new ArrayList();
 
         final String ROOT = "page";
         final String RESULTS = "results";
@@ -54,6 +52,7 @@ import java.util.ArrayList;
             Log.i(TAG, movie.getString("release_date"));
 
             Movie movie_obj = new Movie();
+
             movie_obj.setPOSTER_PATH(IMG_URL + "w185/" + posterPath);
             movie_obj.setBACKDROP_PATH(IMG_URL + "w500/" + backdropPath);
             movie_obj.setID(movie.getString("id"));
