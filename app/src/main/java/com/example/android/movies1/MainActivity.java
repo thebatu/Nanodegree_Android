@@ -1,4 +1,5 @@
 package com.example.android.movies1;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private TextView errText;
     private ProgressBar mLoadingIndicator;
     private Toast mToast;
+    private Movie movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,17 +89,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public void onMovieItemClick(int clickedItemPosition) {
+    public void onMovieItemClick(int clickedItemPosition, Movie clickedOnMovie) {
         if (mToast != null) {
             mToast.cancel();
         }
-        String toaseMessage = "Item #" + clickedItemPosition + "clicked";
-        mToast = Toast.makeText(this, toaseMessage, Toast.LENGTH_LONG);
-
+        String toastMessage = "Item #" + clickedItemPosition + "clicked";
+        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
         mToast.show();
 
-    }
+        Intent intent = new Intent(MainActivity.this, MovieDetailsPage.class);
+        intent.putExtra("movie_obj", clickedOnMovie);
+        startActivity(intent);
 
+    }
 
     public class FetchMoviesTask extends AsyncTask<ArrayList, Void, ArrayList> {
 

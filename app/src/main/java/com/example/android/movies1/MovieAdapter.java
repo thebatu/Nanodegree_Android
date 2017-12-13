@@ -36,7 +36,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     public interface MovieClickListener{
-        void onMovieItemClick (int clickedItemPosition);
+        void onMovieItemClick (int clickedItemPosition, Movie clickedOnMovie);
     }
 
     @Override
@@ -59,6 +59,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         Movie movie = mMovies.get(position);
         Picasso.with(mContext).load(movie.getBACKDROP_PATH()).into(holder.listMovieNumberView);
 
+
+
     }
 
     @Override
@@ -69,8 +71,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void setMovieData(ArrayList MoviesData) {
         mMovies = MoviesData;
     }
-
-
 
     //-----------------------
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
@@ -86,7 +86,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            mOnMovieClickListener.onMovieItemClick(clickedPosition);
+            Movie clickedOnMovie = mMovies.get(clickedPosition);
+
+
+
+
+
+            mOnMovieClickListener.onMovieItemClick(clickedPosition, clickedOnMovie);
         }
     }
 
