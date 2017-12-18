@@ -73,7 +73,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     //-----------------------
-    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView listMovieNumberView;
 
         public MovieViewHolder(View itemView) {
