@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Created by batu on 05/12/17.
+ *
  */
 
  public class TheMovieDBJsonUtils {
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 
         ArrayList movies = new ArrayList();
 
-        final String ROOT = "page";
         final String RESULTS = "results";
         final String CONRESULT = "success";
         final String JSONMSG = "status_message";
@@ -35,7 +35,7 @@ import java.util.ArrayList;
         /* Is there an error? */
         if (moviesJson.has(CONRESULT)) {
             String errorCode = moviesJson.getString(CONRESULT);
-            if (errorCode == "false"){
+            if (errorCode.equals("false")){
                 Log.e(TAG, "Error Occurred " + moviesJson.getString(JSONMSG));
                 return null;
             }

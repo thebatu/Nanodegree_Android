@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 /**
  * Created by batu on 05/12/17.
+ *
  */
 
 public class NetworkUtils {
@@ -23,7 +24,7 @@ public class NetworkUtils {
 
     public static URL buildUrl(String baseURL) {
         URL url = null;
-        if (baseURL == "popular"){
+        if (baseURL.equals("popular")){
             Uri builtUri = Uri.parse(baseMoviePOP).buildUpon()
                     //.appendQueryParameter(SIZE, SIZE)
                     //.appendQueryParameter(PATH, movieToFetch)

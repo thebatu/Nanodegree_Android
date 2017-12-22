@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * Created by batu on 05/12/17.
+ *
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
@@ -45,9 +46,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         Context mContext = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
         MovieViewHolder viewHolder = new MovieViewHolder(view);
 
         return viewHolder;
@@ -68,8 +68,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     if (mMovies !=null) return mMovies.size(); else return 0;
     }
 
-    public void setMovieData(ArrayList MoviesData) {
-        mMovies = MoviesData;
+    public void setMovieData(ArrayList moviesData) {
+        if (moviesData != null) {
+            mMovies = moviesData;
+        }
+
     }
 
     //-----------------------
@@ -78,7 +81,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            listMovieNumberView = (ImageView) itemView.findViewById(R.id.im_item_number);
+            listMovieNumberView = itemView.findViewById(R.id.im_item_number);
             itemView.setOnClickListener(this);
 
         }

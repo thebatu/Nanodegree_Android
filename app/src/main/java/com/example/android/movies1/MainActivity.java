@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_mainMovies);
+        mRecyclerView =  findViewById(R.id.rv_mainMovies);
         errText = findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         String movies_param;
 
         private FetchMoviesTask(String s){
-            if (s == "top_rated") {
+            if (s.equals("top_rated")) {
                 movies_param = "top_rated";
             }else {
                 movies_param = "popular";
