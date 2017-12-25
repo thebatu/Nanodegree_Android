@@ -59,8 +59,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         Movie movie = mMovies.get(position);
         Picasso.with(mContext).load(movie.getBACKDROP_PATH()).into(holder.listMovieNumberView);
 
-
-
     }
 
     @Override
@@ -90,11 +88,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
             Movie clickedOnMovie = mMovies.get(clickedPosition);
-
-
-
-
-
             mOnMovieClickListener.onMovieItemClick(clickedPosition, clickedOnMovie);
         }
     }

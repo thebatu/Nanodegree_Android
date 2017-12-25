@@ -79,10 +79,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (menuItemSelected == R.id.top_rated){
             showMoviesDataView();
             new FetchMoviesTask("top_rated").execute();
-//            return true;
         }else {
+
             showMoviesDataView();
             new FetchMoviesTask("popular").execute();
+
 
         }
         return super.onOptionsItemSelected(item);
@@ -159,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         protected void onPreExecute() {
             super.onPreExecute();
             mRecyclerView.setVisibility(View.INVISIBLE);
+
             mLoadingIndicator.setVisibility(View.VISIBLE);
 
         }

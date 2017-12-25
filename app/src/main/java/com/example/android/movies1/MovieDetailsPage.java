@@ -30,7 +30,7 @@ public class MovieDetailsPage extends AppCompatActivity {
         movieImage = findViewById(R.id.poster_image);
         movieOverview= findViewById(R.id.overview);
         movieDate= findViewById(R.id.date);
-        movieRating= findViewById(R.id.rate);
+        movieRating= findViewById(R.id.rating);
 //        Bundle bundle =  getIntent().getExtras();
 
 //        String s = bundle.getString("id");
@@ -48,6 +48,9 @@ public class MovieDetailsPage extends AppCompatActivity {
 
             String date = movie_obj.getRELEASE_DATE();
             movieDate.setText(date);
+
+            String rate = movie_obj.getVOTE_AVERAGE();
+            movieRating.setText(rate);
 
 
 
