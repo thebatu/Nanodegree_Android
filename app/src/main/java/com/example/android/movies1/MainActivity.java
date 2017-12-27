@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.movies1.Utils.NetworkUtils;
 import com.example.android.movies1.Utils.TheMovieDBJsonUtils;
@@ -27,8 +26,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private MovieAdapter mMovieAdapter;
     private TextView errText;
     private ProgressBar mLoadingIndicator;
-    private Toast mToast;
-    private Movie movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +86,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onMovieItemClick(int clickedItemPosition, Movie clickedOnMovie) {
-        if (mToast != null) {
-            mToast.cancel();
-        }
-
         Intent intent = new Intent(MainActivity.this, MovieDetailsPage.class);
         intent.putExtra("movie_obj", clickedOnMovie);
         startActivity(intent);
@@ -101,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     public class FetchMoviesTask extends AsyncTask<ArrayList, Void, ArrayList> {
 
-        String movies_param;
+        final String movies_param;
 
         private FetchMoviesTask(String s){
             if (s.equals("top_rated")) {

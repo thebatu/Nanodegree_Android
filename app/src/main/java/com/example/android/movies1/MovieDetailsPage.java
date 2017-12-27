@@ -11,12 +11,12 @@ import com.squareup.picasso.Picasso;
 
 public class MovieDetailsPage extends AppCompatActivity {
 
-     String TAG = MovieDetailsPage.class.getSimpleName();
-     TextView movieTitle;
-     ImageView movieImage;
-     TextView movieOverview;
-     TextView movieDate;
-     TextView movieRating;
+    private String TAG = MovieDetailsPage.class.getSimpleName();
+    private TextView movieTitle;
+    private ImageView movieImage;
+    private TextView movieOverview;
+    private TextView movieDate;
+    private TextView movieRating;
 //    Movie mMovie;
 
     @Override
