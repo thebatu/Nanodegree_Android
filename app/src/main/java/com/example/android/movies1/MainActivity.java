@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener{
 
-    private String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void showMoviesDataView() {
-        errText.setVisibility(View.INVISIBLE);
+        errText.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -84,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             showMoviesDataView();
             new FetchMoviesTask("popular").execute();
 
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -94,9 +92,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (mToast != null) {
             mToast.cancel();
         }
-        String toastMessage = "Item #" + clickedItemPosition + "clicked";
-        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
-        mToast.show();
 
         Intent intent = new Intent(MainActivity.this, MovieDetailsPage.class);
         intent.putExtra("movie_obj", clickedOnMovie);
@@ -132,8 +127,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     e.printStackTrace();
                 }
 
-//                mMovieAdapter = new MovieAdapter(getApplicationContext(),simpleJsonMovieData);
-//                mRecyclerView.setAdapter(mMovieAdapter);
                 return simpleJsonMovieData;
 
             } catch (IOException e) {
@@ -148,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 mLoadingIndicator.setVisibility(View.INVISIBLE);
                 mRecyclerView.setVisibility(View.VISIBLE);
                 showMoviesDataView();
-                // COMPLETED (45) Instead of iterating through every string, use mForecastAdapter.setWeatherData and pass in the weather data
                 mMovieAdapter.setMovieData(movieList);
                 mMovieAdapter.notifyDataSetChanged();
             } else {
