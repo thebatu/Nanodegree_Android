@@ -1,10 +1,16 @@
 package com.example.android.movies1;
+import android.annotation.SuppressLint;
+import android.app.LoaderManager;
+
+import android.content.AsyncTaskLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +25,16 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener{
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener, LoaderManager.LoaderCallbacks<ArrayList> {
 
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
     private ProgressBar mLoadingIndicator;
+    private final int SUNSHINE_LOADER = 22;
+    private static final String SUNSHINE_LOADER_EXTRA = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +51,29 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        loadMoviesData();
+        loadMoviesData("popular");
         mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
         mRecyclerView.setAdapter(mMovieAdapter);
     }
 
-    private void loadMoviesData() {
-        String popular = "popular";
-        showMoviesDataView();
-        new FetchMoviesTask(popular).execute();
+    private void loadMoviesData(String s) {
+        String movieType = s;
+        //showMoviesDataView();
+
+        Bundle queryBundle = new Bundle();
+        queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
+
+        LoaderManager loaderManager = getLoaderManager();
+        Loader<String> searchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+
+        if (searchLoader == null) {
+            loaderManager.initLoader(SUNSHINE_LOADER,queryBundle,this);
+        }else {
+            loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle,this);
+        }
+
+
+        //new FetchMoviesTask(popular).execute();
     }
 
     private void showMoviesDataView() {
@@ -74,11 +97,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int menuItemSelected = item.getItemId();
         if (menuItemSelected == R.id.top_rated){
             showMoviesDataView();
-            new FetchMoviesTask("top_rated").execute();
+            loadMoviesData("top_rated");
         }else {
 
             showMoviesDataView();
-            new FetchMoviesTask("popular").execute();
+            loadMoviesData("popular");
 
         }
         return super.onOptionsItemSelected(item);
@@ -92,62 +115,67 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
-    public class FetchMoviesTask extends AsyncTask<ArrayList, Void, ArrayList> {
-
-        final String movies_param;
-
-        private FetchMoviesTask(String s){
-            if (s.equals("top_rated")) {
-                movies_param = "top_rated";
-            }else {
-                movies_param = "popular";
-            }
-        }
-
-        @Override
-        protected ArrayList doInBackground(ArrayList... ArrayList) {
-            URL MoviesRequestUrl = NetworkUtils.buildUrl(movies_param);
-
-            try {
-                String jsonMovieResponse = NetworkUtils
-                        .getResponseFromHttpUrl(MoviesRequestUrl);
-
-                ArrayList simpleJsonMovieData = new ArrayList();
-                try {
-                    simpleJsonMovieData = TheMovieDBJsonUtils
-                            .simpleJsonMovieDataStringsFromJson(MainActivity.this, jsonMovieResponse);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    public Loader<ArrayList> onCreateLoader(int i, final Bundle bundle) {
+        return new AsyncTaskLoader<ArrayList>(this) {
+            @Override
+            public ArrayList loadInBackground() {
+                String popular = bundle.getString(SUNSHINE_LOADER_EXTRA);
+                if (popular == null ){
+                    return null;
                 }
+                try {
 
-                return simpleJsonMovieData;
+                    URL MoviesRequestUrl = NetworkUtils.buildUrl(popular);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+                    String jsonMovieResponse =  NetworkUtils
+                            .getResponseFromHttpUrl(MoviesRequestUrl);
+                    ArrayList simpleJsonMovieData = new ArrayList();
+                    try {
+                        simpleJsonMovieData = TheMovieDBJsonUtils
+                                .simpleJsonMovieDataStringsFromJson(MainActivity.this, jsonMovieResponse);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    return simpleJsonMovieData;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
-        }
 
-        @Override
-        protected void onPostExecute(ArrayList movieList) {
-            if (movieList != null) {
-                mLoadingIndicator.setVisibility(View.INVISIBLE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-                showMoviesDataView();
-                mMovieAdapter.setMovieData(movieList);
-                mMovieAdapter.notifyDataSetChanged();
-            } else {
-                showErrorMessage();
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                if (bundle == null) {
+                    return;
+                }
+                mRecyclerView.setVisibility(View.INVISIBLE);
+                //mLoadingIndicator.setVisibility(View.VISIBLE);
             }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mRecyclerView.setVisibility(View.INVISIBLE);
-
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-
-        }
+        };
     }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList> loader, ArrayList arrayList) {
+        if (arrayList != null) {
+            //mLoadingIndicator.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            showMoviesDataView();
+            mMovieAdapter.setMovieData(arrayList);
+            mMovieAdapter.notifyDataSetChanged();
+        } else {
+            showErrorMessage();
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList> loader) {
+
+    }
+
 }
