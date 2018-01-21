@@ -1,16 +1,16 @@
 package com.example.android.movies1;
-import android.annotation.SuppressLint;
-import android.app.LoaderManager;
 
-import android.content.AsyncTaskLoader;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.Loader;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +25,8 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+
+//import android.app.LoaderManager;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener, LoaderManager.LoaderCallbacks<ArrayList> {
 
@@ -60,16 +61,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         String movieType = s;
         //showMoviesDataView();
 
-        Bundle queryBundle = new Bundle();
-        queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
+        LoaderCallbacks<ArrayList> callback = MainActivity.this;
 
-        LoaderManager loaderManager = getLoaderManager();
-        Loader<String> searchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+        Bundle bundleForLoader = null;
 
-        if (searchLoader == null) {
-            loaderManager.initLoader(SUNSHINE_LOADER,queryBundle,this);
+        //Bundle queryBundle = new Bundle();
+        //queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
+//
+//        LoaderManager loaderManager = getSupportLoaderManager();
+//        Loader<String> searchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+
+        if (bundleForLoader == null) {
+            getSupportLoaderManager().initLoader(SUNSHINE_LOADER, bundleForLoader, callback);
         }else {
-            loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle,this);
+            getSupportLoaderManager().restartLoader(SUNSHINE_LOADER, bundleForLoader, callback);
         }
 
 
@@ -160,22 +165,28 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList> loader, ArrayList arrayList) {
-        if (arrayList != null) {
+    public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
+        if (data != null) {
             //mLoadingIndicator.setVisibility(View.INVISIBLE);
-            mRecyclerView.setVisibility(View.VISIBLE);
+           // mRecyclerView.setVisibility(View.VISIBLE);
             showMoviesDataView();
-            mMovieAdapter.setMovieData(arrayList);
+            mMovieAdapter.setMovieData(data);
             mMovieAdapter.notifyDataSetChanged();
         } else {
             showErrorMessage();
         }
-
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList> loader) {
 
     }
+
+
+
+
+
+
+
 
 }
