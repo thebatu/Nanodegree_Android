@@ -34,7 +34,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private ProgressBar mLoadingIndicator;
     private final int SUNSHINE_LOADER = 22;
     private static final String SUNSHINE_LOADER_EXTRA = "query";
+    private static final String BUNDLE_INSTANCE = "HUMBLE_BUNDLE";
     private String movieType = "popular";
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(BUNDLE_INSTANCE,movieType);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +56,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, 2);
 
+        if(savedInstanceState != null)
+            if (savedInstanceState.containsKey(BUNDLE_INSTANCE)){
+                movieType = savedInstanceState.getString(BUNDLE_INSTANCE);
+            }
+
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        getSupportLoaderManager().initLoader(SUNSHINE_LOADER, null, this);
+        //getSupportLoaderManager().initLoader(SUNSHINE_LOADER, null, this);
 
         loadMoviesData(movieType);
         mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
@@ -59,37 +72,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     private void loadMoviesData(String s) {
-        //showMoviesDataView();
-
-        if (s != null || !s.isEmpty()){
-            movieType = s;
-        }
-
-        //LoaderCallbacks<ArrayList> callback = MainActivity.this;
-
-        //Bundle bundleForLoader = null;
 
         Bundle queryBundle = new Bundle();
         queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
 
-
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<String> MoviesSearchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
         if (MoviesSearchLoader  == null) {
-            loaderManager.initLoader(SUNSHINE_LOADER, queryBundle, this);
+            loaderManager.initLoader(SUNSHINE_LOADER, queryBundle, this).forceLoad();
         } else {
-            loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle, this);
+            loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle, this).forceLoad();
         }
-
-
-
-//        LoaderManager loaderManager = getSupportLoaderManager();
-//        Loader<String> searchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
-
-//        if (queryBundle == null) {
-//        }else {
-//            getSupportLoaderManager().restartLoader(SUNSHINE_LOADER, queryBundle, callback);
-//        }
 
     }
 
@@ -115,13 +108,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (menuItemSelected == R.id.top_rated){
             movieType = "top_rated";
             showMoviesDataView();
-            loadMoviesData("top_rated");
+            loadMoviesData(movieType);
         }else {
 
             movieType = "popular";
             showMoviesDataView();
-            loadMoviesData("popular");
-
+            loadMoviesData(movieType);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -172,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 if (bundle == null) {
                     return;
                 }
+
                 mRecyclerView.setVisibility(View.VISIBLE);
-                //mLoadingIndicator.setVisibility(View.VISIBLE);
+                mLoadingIndicator.setVisibility(View.VISIBLE);
             }
         };
     }
@@ -181,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
         if (data != null) {
-            //mLoadingIndicator.setVisibility(View.INVISIBLE);
-           // mRecyclerView.setVisibility(View.VISIBLE);
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
             showMoviesDataView();
             mMovieAdapter.setMovieData(data);
             mMovieAdapter.notifyDataSetChanged();
@@ -195,12 +188,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onLoaderReset(Loader<ArrayList> loader) {
 
     }
-
-
-
-
-
-
-
 
 }
