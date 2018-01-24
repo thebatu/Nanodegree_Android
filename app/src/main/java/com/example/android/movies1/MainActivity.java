@@ -73,22 +73,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
 
 
-
-
         LoaderManager loaderManager = getSupportLoaderManager();
-        // COMPLETED (22) Get our Loader by calling getLoader and passing the ID we specified
         Loader<String> MoviesSearchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
-        // COMPLETED (23) If the Loader was null, initialize it. Else, restart it.
         if (MoviesSearchLoader  == null) {
             loaderManager.initLoader(SUNSHINE_LOADER, queryBundle, this);
         } else {
             loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle, this);
         }
-
-
-
-
-
 
 
 
