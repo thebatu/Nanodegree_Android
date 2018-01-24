@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private ProgressBar mLoadingIndicator;
     private final int SUNSHINE_LOADER = 22;
     private static final String SUNSHINE_LOADER_EXTRA = "query";
+    private String movieType = "popular";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,33 +51,55 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        loadMoviesData("popular");
+        getSupportLoaderManager().initLoader(SUNSHINE_LOADER, null, this);
+
+        loadMoviesData(movieType);
         mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
         mRecyclerView.setAdapter(mMovieAdapter);
     }
 
     private void loadMoviesData(String s) {
-        String movieType = s;
         //showMoviesDataView();
 
-        LoaderCallbacks<ArrayList> callback = MainActivity.this;
+        if (s != null || !s.isEmpty()){
+            movieType = s;
+        }
 
-        Bundle bundleForLoader = null;
+        //LoaderCallbacks<ArrayList> callback = MainActivity.this;
 
-        //Bundle queryBundle = new Bundle();
-        //queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
-//
-//        LoaderManager loaderManager = getSupportLoaderManager();
-//        Loader<String> searchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+        //Bundle bundleForLoader = null;
 
-        if (bundleForLoader == null) {
-            getSupportLoaderManager().initLoader(SUNSHINE_LOADER, bundleForLoader, callback);
-        }else {
-            getSupportLoaderManager().restartLoader(SUNSHINE_LOADER, bundleForLoader, callback);
+        Bundle queryBundle = new Bundle();
+        queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
+
+
+
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        // COMPLETED (22) Get our Loader by calling getLoader and passing the ID we specified
+        Loader<String> MoviesSearchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+        // COMPLETED (23) If the Loader was null, initialize it. Else, restart it.
+        if (MoviesSearchLoader  == null) {
+            loaderManager.initLoader(SUNSHINE_LOADER, queryBundle, this);
+        } else {
+            loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle, this);
         }
 
 
-        //new FetchMoviesTask(popular).execute();
+
+
+
+
+
+
+//        LoaderManager loaderManager = getSupportLoaderManager();
+//        Loader<String> searchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+
+//        if (queryBundle == null) {
+//        }else {
+//            getSupportLoaderManager().restartLoader(SUNSHINE_LOADER, queryBundle, callback);
+//        }
+
     }
 
     private void showMoviesDataView() {
@@ -101,10 +122,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuItemSelected = item.getItemId();
         if (menuItemSelected == R.id.top_rated){
+            movieType = "top_rated";
             showMoviesDataView();
             loadMoviesData("top_rated");
         }else {
 
+            movieType = "popular";
             showMoviesDataView();
             loadMoviesData("popular");
 
@@ -126,13 +149,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return new AsyncTaskLoader<ArrayList>(this) {
             @Override
             public ArrayList loadInBackground() {
-                String popular = bundle.getString(SUNSHINE_LOADER_EXTRA);
-                if (popular == null ){
+                String sortingOrder = bundle.getString(SUNSHINE_LOADER_EXTRA);
+                if (sortingOrder == null ){
                     return null;
                 }
                 try {
 
-                    URL MoviesRequestUrl = NetworkUtils.buildUrl(popular);
+                    URL MoviesRequestUrl = NetworkUtils.buildUrl(sortingOrder);
 
                     String jsonMovieResponse =  NetworkUtils
                             .getResponseFromHttpUrl(MoviesRequestUrl);
@@ -158,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 if (bundle == null) {
                     return;
                 }
-                mRecyclerView.setVisibility(View.INVISIBLE);
+                mRecyclerView.setVisibility(View.VISIBLE);
                 //mLoadingIndicator.setVisibility(View.VISIBLE);
             }
         };
