@@ -18,6 +18,7 @@ public class Movie implements Parcelable {
     private String OVERVIEW = "overview";
     private String TITLE = "original_title";
 
+
     public Movie() {}
 
     //constructor used for parcel

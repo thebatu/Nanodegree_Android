@@ -47,9 +47,7 @@ import java.util.ArrayList;
             JSONObject movie = JSONMoviesArray.getJSONObject(i);
             String posterPath = movie.getString("poster_path");
             String backdropPath = movie.getString("backdrop_path");
-            Log.i(TAG, movie.getString("original_title"));
-            Log.i(TAG, movie.getString("vote_average"));
-            Log.i(TAG, movie.getString("release_date"));
+
 
             Movie movie_obj = new Movie();
 
