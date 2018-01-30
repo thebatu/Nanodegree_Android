@@ -6,11 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder> {
 
     private DetailsClickListener mOnDetailsClickListener;
     private Context con;
     TextView detailsTextView;
+    private List<Movie> dMovies;
 
     public DetailsAdapter(Context applicationContext, DetailsClickListener listener) {
         mOnDetailsClickListener = listener;
@@ -27,6 +31,9 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
 
     }
 
+
+
+
     @Override
     public int getItemCount() {
         return 0;
@@ -34,6 +41,12 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
 
     public interface DetailsClickListener {
 
+    }
+
+    public void setMovieData(ArrayList moviesData) {
+        if (moviesData != null) {
+            dMovies = moviesData;
+        }
     }
 
     public class DetailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

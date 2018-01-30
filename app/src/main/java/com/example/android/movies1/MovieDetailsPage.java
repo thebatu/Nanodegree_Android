@@ -10,10 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.movies1.Utils.TheMovieDBJsonUtils;
+import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +24,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-
 
 public class MovieDetailsPage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList>, DetailsAdapter.DetailsClickListener {
 
@@ -109,11 +110,10 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
         Loader<Integer> MoviesSearchLoader = loaderManager.getLoader(MOVIE_DETAILS_LOADER);
 
         if (MoviesSearchLoader  == null) {
-            loaderManager.initLoader(MOVIE_DETAILS_LOADER, queryBundle, this);
+            loaderManager.initLoader(MOVIE_DETAILS_LOADER, queryBundle, this).forceLoad();
         } else {
             loaderManager.restartLoader(MOVIE_DETAILS_LOADER, queryBundle, this);
         }
-
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -121,7 +121,17 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     public Loader<ArrayList> onCreateLoader(int id, final Bundle bundle) {
         return new AsyncTaskLoader<ArrayList>(this) {
             @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                Log.d(TAG, "onStartLoading: Rick");
+                int ss =  bundle.getInt(MOVIE_DETAILS_EXTRA);
+                Log.d(TAG, "onStartLoading: ");
+
+            }
+
+            @Override
             public ArrayList loadInBackground() {
+                Log.d(TAG, "loadinBackground: RICKKKKK ");
                 int movie_id = bundle.getInt(MOVIE_DETAILS_EXTRA);
                 if (movie_id < 0 ){
                     return null;
@@ -133,15 +143,15 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
                     String jsonMovieResponse =  movieDetailsNetworkUtil
                             .getResponseFromHttpUrl(MoviesDetailRequestUrl);
-                    ArrayList simpleJsonMovieDetailData = new ArrayList();
+                    ArrayList a_movie_key = new ArrayList();
                     try {
-                        simpleJsonMovieDetailData = TheMovieDBJsonUtils
+                        a_movie_key = TheMovieDetailsJonUtils
                                 .simpleJsonMovieDataStringsFromJson(MovieDetailsPage.this, jsonMovieResponse);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    return simpleJsonMovieDetailData;
+                    return a_movie_key;
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -150,14 +160,14 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
             }
 
         };
-
-
-
     }
 
     @Override
     public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
-        Log.d("HERE", data.toString());
+
+        mDetailsAdapter.setMovieData(data);
+        mDetailsAdapter.notifyDataSetChanged();
+
     }
 
     @Override

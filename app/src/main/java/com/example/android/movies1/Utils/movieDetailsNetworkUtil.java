@@ -1,6 +1,7 @@
 package com.example.android.movies1.Utils;
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +17,15 @@ import java.util.Scanner;
 
 public class movieDetailsNetworkUtil {
     static int key;
-    final static private  String DetailedMovie = "https://api.themoviedb.org/3/movie/"+key+"/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US";
 
 
     public static URL buildUrl(int baseURL) {
-        URL url = null;
         key = baseURL;
+
+        String DetailedMovie = "https://api.themoviedb.org/3/movie/"+key+"/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US";
+        Log.d( "RICK Detailed Movie : ", DetailedMovie);
+
+        URL url = null;
         Uri builtUri = Uri.parse(DetailedMovie).buildUpon()
                 //.appendQueryParameter(SIZE, SIZE)
                 //.appendQueryParameter(PATH, movieToFetch)
@@ -33,7 +37,6 @@ public class movieDetailsNetworkUtil {
         }
 
         return url;
-
     }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
