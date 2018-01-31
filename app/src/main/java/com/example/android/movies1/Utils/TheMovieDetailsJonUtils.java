@@ -24,10 +24,10 @@ public class TheMovieDetailsJonUtils {
 //    public TheMovieDBJsonUtils(){
 //    }
 
-    public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieDetailJsonString)
+    public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieDetailJsonString, Movie movie)
             throws JSONException {
 
-        ArrayList movies = new ArrayList();
+        ArrayList movie_key = new ArrayList();
 
         final String RESULTS = "results";
         final String CONRESULT = "success";
@@ -52,12 +52,19 @@ public class TheMovieDetailsJonUtils {
             //String posterPath = movieDetail.getString("poster_path");
             //String backdropPath = movieDetail.getString("backdrop_path");
 
-            Movie movie_detail_obj = new Movie();
-            movie_detail_obj.setKEY((movieDetail.getString("key")));
-            movies.add(movie_detail_obj);
+            //Movie movie_detail_obj = new Movie();
+            String mkey =  movieDetail.getString("key");
+            if (mkey != "" || mkey != null){
+               // movie_detail_obj.setKEY(());
+                //movies.add(movie_detail_obj);
+                movie_key.add(mkey);
+            }else {
+                movie_key.add("No Trailers");
+            }
+
         }
 
-        return movies;
+        return movie_key;
 
     }
 }

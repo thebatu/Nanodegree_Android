@@ -23,6 +23,7 @@ public class movieDetailsNetworkUtil {
         key = baseURL;
 
         String DetailedMovie = "https://api.themoviedb.org/3/movie/"+key+"/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US";
+
         Log.d( "RICK Detailed Movie : ", DetailedMovie);
 
         URL url = null;

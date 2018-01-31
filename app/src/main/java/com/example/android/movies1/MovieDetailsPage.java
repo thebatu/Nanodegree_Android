@@ -10,11 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.movies1.Utils.TheMovieDBJsonUtils;
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;
 import com.squareup.picasso.Picasso;
@@ -41,7 +39,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     private TextView movieDate;
     private TextView movieRating;
     private int id;
-//    Movie mMovie;
+    Movie mMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +62,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
             to get the trailer
          */
         Movie movie_obj = getIntent().getParcelableExtra("movie_obj");
+        mMovie = movie_obj;
         if (movie_obj != null ) {
             String posterPath = movie_obj.getBACKDROP_PATH();
             Picasso.with(context).load(posterPath).into(movieImage);
@@ -131,6 +130,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
             @Override
             public ArrayList loadInBackground() {
+
                 Log.d(TAG, "loadinBackground: RICKKKKK ");
                 int movie_id = bundle.getInt(MOVIE_DETAILS_EXTRA);
                 if (movie_id < 0 ){
@@ -144,12 +144,15 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
                     String jsonMovieResponse =  movieDetailsNetworkUtil
                             .getResponseFromHttpUrl(MoviesDetailRequestUrl);
                     ArrayList a_movie_key = new ArrayList();
+
                     try {
                         a_movie_key = TheMovieDetailsJonUtils
-                                .simpleJsonMovieDataStringsFromJson(MovieDetailsPage.this, jsonMovieResponse);
+                                .simpleJsonMovieDataStringsFromJson(MovieDetailsPage.this, jsonMovieResponse, mMovie);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
+                    //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
 
                     return a_movie_key;
 
