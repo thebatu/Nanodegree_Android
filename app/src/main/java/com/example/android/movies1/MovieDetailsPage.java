@@ -31,8 +31,6 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     private static final String MOVIE_DETAILS_EXTRA = "movie_query";
     private final int MOVIE_DETAILS_LOADER = 44;
 
-
-
     private TextView movieTitle;
     private ImageView movieImage;
     private TextView movieOverview;
@@ -54,7 +52,6 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
         movieOverview= findViewById(R.id.overview);
         movieDate= findViewById(R.id.date);
         movieRating= findViewById(R.id.rating);
-
 
 
         /*
@@ -143,10 +140,10 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
                     String jsonMovieResponse =  movieDetailsNetworkUtil
                             .getResponseFromHttpUrl(MoviesDetailRequestUrl);
-                    ArrayList a_movie_key = new ArrayList();
+                    ArrayList trailers_josn = new ArrayList();
 
                     try {
-                        a_movie_key = TheMovieDetailsJonUtils
+                        trailers_josn = TheMovieDetailsJonUtils
                                 .simpleJsonMovieDataStringsFromJson(MovieDetailsPage.this, jsonMovieResponse, mMovie);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -154,27 +151,32 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
                     //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
 
-                    return a_movie_key;
+                    return trailers_josn;
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;
                 }
             }
-
         };
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
+    public void onLoadFinished(Loader<ArrayList> loader, ArrayList trailers_obj) {
+        Log.d(TAG, "bitch: " + trailers_obj);
 
-        mDetailsAdapter.setMovieData(data);
+        mDetailsAdapter.setMovieData(trailers_obj);
         mDetailsAdapter.notifyDataSetChanged();
 
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList> loader) {
+
+    }
+
+    @Override
+    public void onMovieItemClick(int clickedItemPosition, Movie clickedOnMovie) {
 
     }
 }

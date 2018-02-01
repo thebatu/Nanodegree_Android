@@ -4,12 +4,15 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.android.movies1.Movie;
+import com.example.android.movies1.Trailers;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static com.example.android.movies1.Utils.movieDetailsNetworkUtil.key;
 
 /**
  * Created by bats on 1/30/18.
@@ -27,7 +30,7 @@ public class TheMovieDetailsJonUtils {
     public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieDetailJsonString, Movie movie)
             throws JSONException {
 
-        ArrayList movie_key = new ArrayList();
+        ArrayList trailers = new ArrayList();
 
         final String RESULTS = "results";
         final String CONRESULT = "success";
@@ -44,27 +47,26 @@ public class TheMovieDetailsJonUtils {
             }
         }
 
-        JSONArray JSONMoviesArray = moviesJson.getJSONArray(RESULTS);
+        JSONArray trailersJson = moviesJson.getJSONArray(RESULTS);
+        //ArrayList<Trailer> trailersJson = new ArrayList<>();
 
-        for (int i = 0; i < JSONMoviesArray.length(); i++) {
-            JSONObject movieDetail = JSONMoviesArray.getJSONObject(i);
 
-            //String posterPath = movieDetail.getString("poster_path");
-            //String backdropPath = movieDetail.getString("backdrop_path");
-
-            //Movie movie_detail_obj = new Movie();
+        for (int i = 0; i < trailersJson.length(); i++) {
+            JSONObject movieDetail = trailersJson.getJSONObject(i);
+            String mId = movieDetail.getString("id");
+            String name = movieDetail.getString("name");
+            String key = movieDetail.getString("key");
+            String site = movieDetail.getString("site");
+            String size = movieDetail.getString("size");
+            String type = movieDetail.getString("type");
             String mkey =  movieDetail.getString("key");
-            if (mkey != "" || mkey != null){
-               // movie_detail_obj.setKEY(());
-                //movies.add(movie_detail_obj);
-                movie_key.add(mkey);
-            }else {
-                movie_key.add("No Trailers");
-            }
+
+            Trailers trailer = new Trailers(mId, name, key, site, size, type);
+            trailers.add(trailer);
 
         }
 
-        return movie_key;
+        return trailers;
 
     }
 }

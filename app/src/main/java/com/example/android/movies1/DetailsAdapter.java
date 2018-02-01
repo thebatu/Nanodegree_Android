@@ -2,6 +2,7 @@ package com.example.android.movies1;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,7 +15,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
     private DetailsClickListener mOnDetailsClickListener;
     private Context con;
     TextView detailsTextView;
-    private List<Movie> dMovies;
+    private ArrayList dMovies;
 
     public DetailsAdapter(Context applicationContext, DetailsClickListener listener) {
         mOnDetailsClickListener = listener;
@@ -23,23 +24,33 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
 
     @Override
     public DetailsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+
+        Context mContext = parent.getContext();
+        int layoutIdForListItem = R.layout.details_list_item;
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+
+        View view = inflater.inflate(layoutIdForListItem, parent, false);
+        DetailsViewHolder viewHolder = new DetailsViewHolder(view);
+
+        return viewHolder;
+
     }
 
     @Override
     public void onBindViewHolder(DetailsViewHolder holder, int position) {
+       //int smovie = dMovies.get(position);
 
     }
-
-
-
 
     @Override
     public int getItemCount() {
-        return 0;
+
+        if (dMovies !=null) return dMovies.size(); else return 0;
     }
 
+    //----------------------
     public interface DetailsClickListener {
+        void onMovieItemClick(int clickedItemPosition, Movie clickedOnMovie);
 
     }
 
@@ -51,19 +62,19 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsV
 
     public class DetailsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        TextView listDetailsNumerView;
+        TextView listDetailsNumberView;
 
         public DetailsViewHolder(View itemView) {
             super(itemView);
-            listDetailsNumerView = itemView.findViewById(R.id.tv_detail_number);
+            listDetailsNumberView = itemView.findViewById(R.id.tv_detail_number);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            int clickedPosition = getAdapterPosition();
-
-
+//            int clickedPosition = getAdapterPosition();
+//            Movie clickedOnMovie = dMovies.get(clickedPosition);
+//            mOnDetailsClickListener.onMovieItemClick(clickedPosition, clickedOnMovie);
         }
     }
 }

@@ -17,7 +17,6 @@ public class Movie implements Parcelable {
     private String BACKDROP_PATH = "backdrop_path";
     private String OVERVIEW = "overview";
     private String TITLE = "original_title";
-    private String KEY = "key";
 
 
 
@@ -34,7 +33,6 @@ public class Movie implements Parcelable {
         BACKDROP_PATH = in.readString();
         OVERVIEW = in.readString();
         TITLE = in.readString();
-        KEY = in.readString();
     }
 
     //return hashcode of object
@@ -71,7 +69,6 @@ public class Movie implements Parcelable {
         dest.writeString(BACKDROP_PATH);
         dest.writeString(OVERVIEW);
         dest.writeString(TITLE);
-        dest.writeString(KEY);
 
     }
 
@@ -138,9 +135,6 @@ public class Movie implements Parcelable {
         this.ID = ID;
     }
 
-    public void setKEY(String KEY) {
-        this.KEY = KEY;
-    }
 
 
 
