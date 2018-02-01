@@ -4,15 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.android.movies1.Movie;
-import com.example.android.movies1.Trailers;
+import com.example.android.movies1.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import static com.example.android.movies1.Utils.movieDetailsNetworkUtil.key;
 
 /**
  * Created by bats on 1/30/18.
@@ -61,7 +59,7 @@ public class TheMovieDetailsJonUtils {
             String type = movieDetail.getString("type");
             String mkey =  movieDetail.getString("key");
 
-            Trailers trailer = new Trailers(mId, name, key, site, size, type);
+            Trailer trailer = new Trailer(mId, name, key, site, size, type);
             trailers.add(trailer);
 
         }

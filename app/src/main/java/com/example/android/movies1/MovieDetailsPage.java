@@ -37,7 +37,10 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     private TextView movieDate;
     private TextView movieRating;
     private int id;
+    Trailer trailers;
+
     Movie mMovie;
+    ArrayList<Trailer> trailerArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
         movieOverview= findViewById(R.id.overview);
         movieDate= findViewById(R.id.date);
         movieRating= findViewById(R.id.rating);
+
+        trailerArrayList = new ArrayList<>();
 
 
         /*
@@ -87,7 +92,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
             loadMoviesData(id);
 
-            mDetailsAdapter = new DetailsAdapter(getApplicationContext(),this);
+            mDetailsAdapter = new DetailsAdapter(getApplicationContext(),this, trailerArrayList);
             dRecyclerView.setAdapter(mDetailsAdapter);
 
         }
@@ -163,11 +168,13 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<ArrayList> loader, ArrayList trailers_obj) {
-        Log.d(TAG, "bitch: " + trailers_obj);
+        Log.d(TAG, "RICK onLoadFinished: " + trailers_obj);
 
-        mDetailsAdapter.setMovieData(trailers_obj);
-        mDetailsAdapter.notifyDataSetChanged();
-
+        if (trailers_obj != null) {
+            trailerArrayList = trailers_obj;
+            mDetailsAdapter.setMovieData(trailers_obj);
+            mDetailsAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -176,7 +183,14 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     }
 
     @Override
-    public void onMovieItemClick(int clickedItemPosition, Movie clickedOnMovie) {
-
+    public void onListItemClick(int clickedItemIndex, Movie clickedOnMovie) {
+        trailers = trailerArrayList.get(clickedItemIndex);
+//
+//        String urlAsString = "https://www.youtube.com/watch?v=";
+//        Uri webPage = Uri.parse(urlAsString.concat(trailers.getKey()));
+//        Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
+//        if (intent.resolveActivity(getPackageManager()) != null) {
+//            startActivity(intent);
+//        }
     }
 }

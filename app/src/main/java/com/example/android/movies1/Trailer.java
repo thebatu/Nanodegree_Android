@@ -8,7 +8,7 @@ import android.os.Parcelable;
  *
  */
 
-    public class Trailers implements Parcelable {
+    public class Trailer implements Parcelable {
 
 
         private String mId;
@@ -18,7 +18,7 @@ import android.os.Parcelable;
         private String size;
         private String type;
 
-        public Trailers(String mId, String name, String key, String site, String size, String type) {
+        public Trailer(String mId, String name, String key, String site, String size, String type) {
             this.mId = mId;
             this.name = name;
             this.key = key;
@@ -52,7 +52,7 @@ import android.os.Parcelable;
         }
 
 
-        protected Trailers(Parcel in) {
+        protected Trailer(Parcel in) {
             mId = in.readString();
             name = in.readString();
             key = in.readString();
@@ -77,15 +77,15 @@ import android.os.Parcelable;
         }
 
 
-        public static final Parcelable.Creator<Trailers> CREATOR = new Parcelable.Creator<Trailers>() {
+        public static final Parcelable.Creator<Trailer> CREATOR = new Parcelable.Creator<Trailer>() {
             @Override
-            public Trailers createFromParcel(Parcel in) {
-                return new Trailers(in);
+            public Trailer createFromParcel(Parcel in) {
+                return new Trailer(in);
             }
 
             @Override
-            public Trailers[] newArray(int size) {
-                return new Trailers[size];
+            public Trailer[] newArray(int size) {
+                return new Trailer[size];
             }
         };
 }
