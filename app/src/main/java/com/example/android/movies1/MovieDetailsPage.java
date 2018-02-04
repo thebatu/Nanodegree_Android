@@ -2,12 +2,14 @@ package com.example.android.movies1;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
@@ -83,17 +85,17 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
             id = Integer.parseInt(movie_obj.getID());
 
-            GridLayoutManager dLayoutManager
-                    = new GridLayoutManager(this, 1);
+            LinearLayoutManager dLayoutManager
+                    = new LinearLayoutManager(this);
 
             dRecyclerView.setLayoutManager(dLayoutManager);
             //dRecyclerView.setNestedScrollingEnabled(false);
             dRecyclerView.setHasFixedSize(true);
 
-            loadMoviesData(id);
-
             mDetailsAdapter = new DetailsAdapter(getApplicationContext(),this, trailerArrayList);
             dRecyclerView.setAdapter(mDetailsAdapter);
+            loadMoviesData(id);
+
 
         }
         //movieImage.setImageBitmap(movie_obj.getBACKDROP_PATH());
@@ -155,7 +157,6 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
                     }
 
                     //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
-
                     return trailers_josn;
 
                 } catch (IOException e) {
@@ -172,6 +173,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
 
         if (trailers_obj != null) {
             trailerArrayList = trailers_obj;
+            Log.d(TAG, "PICKLE RICK: " + trailers_obj.toString());
             mDetailsAdapter.setMovieData(trailers_obj);
             mDetailsAdapter.notifyDataSetChanged();
         }
@@ -183,14 +185,14 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     }
 
     @Override
-    public void onListItemClick(int clickedItemIndex, Movie clickedOnMovie) {
-        trailers = trailerArrayList.get(clickedItemIndex);
-//
-//        String urlAsString = "https://www.youtube.com/watch?v=";
-//        Uri webPage = Uri.parse(urlAsString.concat(trailers.getKey()));
-//        Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
-//        if (intent.resolveActivity(getPackageManager()) != null) {
-//            startActivity(intent);
-//        }
+    public void onListItemClick(int clickedItemPosition) {
+        trailers = trailerArrayList.get(clickedItemPosition);
+        String urlAsString = "https://www.youtube.com/watch?v=";
+        Uri webPage = Uri.parse(urlAsString.concat(trailers.getKey()));
+        Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+
     }
 }

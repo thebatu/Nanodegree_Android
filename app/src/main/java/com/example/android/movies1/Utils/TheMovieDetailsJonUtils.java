@@ -28,7 +28,7 @@ public class TheMovieDetailsJonUtils {
     public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieDetailJsonString, Movie movie)
             throws JSONException {
 
-        ArrayList trailers = new ArrayList();
+        ArrayList<Trailer> trailers = new ArrayList<>();
 
         final String RESULTS = "results";
         final String CONRESULT = "success";

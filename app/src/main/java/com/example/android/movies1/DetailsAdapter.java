@@ -27,7 +27,6 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.TrailerV
         void onListItemClick(int clickedItemPosition);
     }
 
-
     public DetailsAdapter(Context applicationContext, DetailsClickListener listener, ArrayList<Trailer> trailer) {
         mOnDetailsClickListener = listener;
         context = applicationContext;
@@ -74,13 +73,12 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.TrailerV
         ((TrailerViewHolder) holder).listDetailsNumberView.setText(trailerList.getType());
         Picasso.with(context).load(YOUTUBE_IMG_URL.concat(trailerList.getKey()).concat(finalUrl)).placeholder(R.drawable.placeholder).fit().into(((TrailerViewHolder) holder).icon);
 
-
     }
 
     @Override
     public int getItemCount() {
 
-        if (dMovies !=null) return dMovies.size(); else return 0;
+        if (trailer !=null) return trailer.size(); else return 0;
     }
 
     //----------------------
@@ -88,7 +86,8 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.TrailerV
 
     public void setMovieData(ArrayList moviesData) {
         if (moviesData != null) {
-            dMovies = moviesData;
+            trailer = moviesData;
+            notifyDataSetChanged();
         }
     }
 
