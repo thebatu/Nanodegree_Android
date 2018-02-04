@@ -18,6 +18,8 @@ public class Movie implements Parcelable {
     private String OVERVIEW = "overview";
     private String TITLE = "original_title";
 
+
+
     public Movie() {}
 
     //constructor used for parcel
@@ -67,6 +69,7 @@ public class Movie implements Parcelable {
         dest.writeString(BACKDROP_PATH);
         dest.writeString(OVERVIEW);
         dest.writeString(TITLE);
+
     }
 
 
@@ -131,6 +134,8 @@ public class Movie implements Parcelable {
     public void setID(String ID) {
         this.ID = ID;
     }
+
+
 
 
 }

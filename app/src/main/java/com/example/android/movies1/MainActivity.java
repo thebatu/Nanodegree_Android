@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 if (bundle == null) {
                     return;
                 }
-
                 mRecyclerView.setVisibility(View.VISIBLE);
                 mLoadingIndicator.setVisibility(View.VISIBLE);
             }

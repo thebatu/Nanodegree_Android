@@ -12,11 +12,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by batu on 05/12/17.
- *
- */
-
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     ImageView mImageView;
     private int mNumberItems;
@@ -40,6 +35,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         void onMovieItemClick (int clickedItemPosition, Movie clickedOnMovie);
     }
 
+    /*
+    create new items in the form of view holders (public class MovieViewHolder)
+     */
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
@@ -53,14 +51,22 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         return viewHolder;
     }
 
+    /*
+    populate the items(view holders) with data
+
+     */
     @Override
-    public void onBindViewHolder(MovieViewHolder holder, int position) {
+    public void onBindViewHolder(MovieViewHolder viewHolder, int position) {
 
         Movie movie = mMovies.get(position);
-        Picasso.with(mContext).load(movie.getBACKDROP_PATH()).into(holder.listMovieNumberView);
+        Picasso.with(mContext).load(movie.getBACKDROP_PATH()).into(viewHolder.listMovieNumberView);
 
     }
 
+    /*
+    return information about the data. such as how many items in a given data source, this data may come from an arrayList or the result
+    of network request ir any other data soure u can model
+     */
     @Override
     public int getItemCount() {
     if (mMovies !=null) return mMovies.size(); else return 0;
@@ -91,11 +97,4 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             mOnMovieClickListener.onMovieItemClick(clickedPosition, clickedOnMovie);
         }
     }
-
-
-
-
-
-
-
 }
