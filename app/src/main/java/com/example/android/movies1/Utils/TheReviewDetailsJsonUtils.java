@@ -41,7 +41,6 @@ public class TheReviewDetailsJsonUtils {
         JSONArray reviewsJson = reviewJson.getJSONArray(RESULTS);
         //ArrayList<Trailer> trailersJson = new ArrayList<>();
 
-
         for (int i = 0; i < reviewsJson .length(); i++) {
             JSONObject reviewDetail = reviewsJson .getJSONObject(i);
             String mId = reviewDetail.getString("id");

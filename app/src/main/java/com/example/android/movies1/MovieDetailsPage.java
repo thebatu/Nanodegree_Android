@@ -50,6 +50,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
     Movie mMovie;
     ArrayList<Trailer> trailerArrayList;
+    ArrayList<Trailer> reviewArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +142,6 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }
     }
 
-
     //--------------------------------------------------------------------------------------------
 
     public LoaderManager.LoaderCallbacks<ArrayList> reviewLoaderListener = new LoaderManager.LoaderCallbacks<ArrayList>() {
@@ -186,7 +186,15 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }
 
         @Override
-        public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
+        public void onLoadFinished(Loader<ArrayList> loader, ArrayList reviewsList) {
+            Log.d(TAG, "RICK onLoadFinished: " + reviewsList);
+
+            if (reviewsList != null) {
+                reviewArrayList = reviewsList;
+                Log.d(TAG, "PICKLE RICK: " + reviewsList.toString());
+                mDetailsAdapter.setReiewData(reviewsList);
+                mDetailsAdapter.notifyDataSetChanged();
+            }
 
         }
 
