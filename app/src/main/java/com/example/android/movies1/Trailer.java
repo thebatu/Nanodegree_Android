@@ -10,7 +10,6 @@ import android.os.Parcelable;
 
     public class Trailer implements Parcelable {
 
-
         private String mId;
         private String name;
         private String key;

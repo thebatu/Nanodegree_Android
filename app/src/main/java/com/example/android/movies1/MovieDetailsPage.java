@@ -16,7 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
+import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
+
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;
+import com.example.android.movies1.Utils.reviewDetailsNetworkUtil;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -25,13 +28,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MovieDetailsPage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList>, DetailsAdapter.DetailsClickListener {
+//LoaderManager.LoaderCallbacks<ArrayList>
+public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.DetailsClickListener {
 
     private String TAG = MovieDetailsPage.class.getSimpleName();
     private RecyclerView dRecyclerView;
     private DetailsAdapter mDetailsAdapter;
-    private static final String MOVIE_DETAILS_EXTRA = "movie_query";
-    private final int MOVIE_DETAILS_LOADER = 44;
+    private static final String TRAILER_DETAILS_EXTRA = "trailer_query";
+    private static final String REVIEW_DETAILS_EXTRA = "review_query";
+    private final int TRAILER_DETAILS_LOADER = 44;
+    private final int REVIEW_DETAILS_LOADER = 88;
 
     private TextView movieTitle;
     private ImageView movieImage;
@@ -40,6 +46,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     private TextView movieRating;
     private int id;
     Trailer trailers;
+    Context context;
 
     Movie mMovie;
     ArrayList<Trailer> trailerArrayList;
@@ -48,15 +55,15 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details_page);
-        Context context = this.getApplicationContext();
+        context = this.getApplicationContext();
 
-        dRecyclerView =  findViewById(R.id.rv_movie_details);
+        dRecyclerView = findViewById(R.id.rv_movie_details);
 
         movieTitle = findViewById(R.id.title);
         movieImage = findViewById(R.id.poster_image);
-        movieOverview= findViewById(R.id.overview);
-        movieDate= findViewById(R.id.date);
-        movieRating= findViewById(R.id.rating);
+        movieOverview = findViewById(R.id.overview);
+        movieDate = findViewById(R.id.date);
+        movieRating = findViewById(R.id.rating);
 
         trailerArrayList = new ArrayList<>();
 
@@ -67,7 +74,7 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
          */
         Movie movie_obj = getIntent().getParcelableExtra("movie_obj");
         mMovie = movie_obj;
-        if (movie_obj != null ) {
+        if (movie_obj != null) {
             String posterPath = movie_obj.getBACKDROP_PATH();
             Picasso.with(context).load(posterPath).into(movieImage);
 
@@ -89,13 +96,13 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
                     = new LinearLayoutManager(this);
 
             dRecyclerView.setLayoutManager(dLayoutManager);
-            //dRecyclerView.setNestedScrollingEnabled(false);
+            //dRecyclerView.setNestedScrollingEnabled(true);
             dRecyclerView.setHasFixedSize(true);
 
-            mDetailsAdapter = new DetailsAdapter(getApplicationContext(),this, trailerArrayList);
+            mDetailsAdapter = new DetailsAdapter(getApplicationContext(), this, trailerArrayList);
             dRecyclerView.setAdapter(mDetailsAdapter);
-            loadMoviesData(id);
-
+            activateTrailersLoader(id);
+            activateReviewLoader(id);
 
         }
         //movieImage.setImageBitmap(movie_obj.getBACKDROP_PATH());
@@ -104,85 +111,165 @@ public class MovieDetailsPage extends AppCompatActivity implements LoaderManager
     /*
         int id --> the ID of the movie clicked on
      */
-    private void loadMoviesData(int id) {
+    private void activateTrailersLoader(int id) {
 
-        Bundle queryBundle = new Bundle();
-        queryBundle.putInt(MOVIE_DETAILS_EXTRA ,id);
+        Bundle queryTrailerBundle = new Bundle();
+        queryTrailerBundle.putInt(TRAILER_DETAILS_EXTRA, id);
 
         LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<Integer> MoviesSearchLoader = loaderManager.getLoader(MOVIE_DETAILS_LOADER);
+        Loader<Integer> MoviesSearchLoader = loaderManager.getLoader(TRAILER_DETAILS_LOADER);
 
-        if (MoviesSearchLoader  == null) {
-            loaderManager.initLoader(MOVIE_DETAILS_LOADER, queryBundle, this).forceLoad();
+        if (MoviesSearchLoader == null) {
+            loaderManager.initLoader(TRAILER_DETAILS_LOADER, queryTrailerBundle, trailerLoaderListener).forceLoad();
         } else {
-            loaderManager.restartLoader(MOVIE_DETAILS_LOADER, queryBundle, this);
+            loaderManager.restartLoader(TRAILER_DETAILS_LOADER, queryTrailerBundle, trailerLoaderListener);
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    @Override
-    public Loader<ArrayList> onCreateLoader(int id, final Bundle bundle) {
-        return new AsyncTaskLoader<ArrayList>(this) {
-            @Override
-            protected void onStartLoading() {
-                super.onStartLoading();
-                Log.d(TAG, "onStartLoading: Rick");
-                int ss =  bundle.getInt(MOVIE_DETAILS_EXTRA);
-                Log.d(TAG, "onStartLoading: ");
+    private void activateReviewLoader(int id) {
 
-            }
+        Bundle queryReviewBundle = new Bundle();
+        queryReviewBundle.putInt(REVIEW_DETAILS_EXTRA,id);
 
-            @Override
-            public ArrayList loadInBackground() {
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<Integer> ReviewSearchLoader = loaderManager.getLoader(REVIEW_DETAILS_LOADER);
 
-                Log.d(TAG, "loadinBackground: RICKKKKK ");
-                int movie_id = bundle.getInt(MOVIE_DETAILS_EXTRA);
-                if (movie_id < 0 ){
-                    return null;
-                }
+        if (ReviewSearchLoader == null) {
+            loaderManager.initLoader(REVIEW_DETAILS_LOADER, queryReviewBundle, reviewLoaderListener).forceLoad();
+        } else {
+            loaderManager.restartLoader(REVIEW_DETAILS_LOADER, queryReviewBundle, reviewLoaderListener);
+        }
+    }
 
-                try {
 
-                    URL MoviesDetailRequestUrl = movieDetailsNetworkUtil.buildUrl(movie_id);
+    //--------------------------------------------------------------------------------------------
 
-                    String jsonMovieResponse =  movieDetailsNetworkUtil
-                            .getResponseFromHttpUrl(MoviesDetailRequestUrl);
-                    ArrayList trailers_josn = new ArrayList();
+    public LoaderManager.LoaderCallbacks<ArrayList> reviewLoaderListener = new LoaderManager.LoaderCallbacks<ArrayList>() {
 
-                    try {
-                        trailers_josn = TheMovieDetailsJonUtils
-                                .simpleJsonMovieDataStringsFromJson(MovieDetailsPage.this, jsonMovieResponse, mMovie);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+        @SuppressLint("StaticFieldLeak")
+        @Override
+        public AsyncTaskLoader onCreateLoader(int id, final Bundle bundle) {
+            return new AsyncTaskLoader(context) {
+                @Override
+                public Object loadInBackground() {
+                    Log.d(TAG, "loadinBackground: TIME ");
+                    int movie_id = bundle.getInt(REVIEW_DETAILS_EXTRA);
+                    if (movie_id < 0) {
+                        return null;
                     }
 
-                    //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
-                    return trailers_josn;
+                    try {
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
+                        URL ReviewsDetailRequestUrl = reviewDetailsNetworkUtil.buildUrl(movie_id);
+
+                        String jsonReviewResponse = reviewDetailsNetworkUtil
+                                .getResponseFromHttpUrl(ReviewsDetailRequestUrl);
+                        ArrayList reviews_josn = new ArrayList<>();
+
+                        try {
+                            reviews_josn = TheReviewDetailsJsonUtils
+                                    .simpleJsonMovieDataStringsFromJson(jsonReviewResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
+                        return reviews_josn;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
                 }
-            }
-        };
-    }
+            };
 
-    @Override
-    public void onLoadFinished(Loader<ArrayList> loader, ArrayList trailers_obj) {
-        Log.d(TAG, "RICK onLoadFinished: " + trailers_obj);
-
-        if (trailers_obj != null) {
-            trailerArrayList = trailers_obj;
-            Log.d(TAG, "PICKLE RICK: " + trailers_obj.toString());
-            mDetailsAdapter.setMovieData(trailers_obj);
-            mDetailsAdapter.notifyDataSetChanged();
         }
-    }
 
-    @Override
-    public void onLoaderReset(Loader<ArrayList> loader) {
+        @Override
+        public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
 
-    }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<ArrayList> loader) {
+
+        }
+    };
+
+
+    //--------------------------------------------------------------------------------------------
+
+    public LoaderManager.LoaderCallbacks<ArrayList> trailerLoaderListener = new LoaderManager.LoaderCallbacks<ArrayList>() {
+
+        @SuppressLint("StaticFieldLeak")
+        public AsyncTaskLoader onCreateLoader(int id, final Bundle bundle) {
+            return new AsyncTaskLoader(MovieDetailsPage.this) {
+                @Override
+                protected void onStartLoading() {
+                    super.onStartLoading();
+                    Log.d(TAG, "onStartLoading: Rick");
+                    int ss = bundle.getInt(TRAILER_DETAILS_EXTRA);
+                    Log.d(TAG, "onStartLoading: ");
+
+                }
+
+                @Override
+                public ArrayList loadInBackground() {
+
+                    Log.d(TAG, "loadinBackground: RICKKKKK ");
+                    int movie_id = bundle.getInt(TRAILER_DETAILS_EXTRA);
+                    if (movie_id < 0) {
+                        return null;
+                    }
+
+                    try {
+
+                        URL MoviesDetailRequestUrl = movieDetailsNetworkUtil.buildUrl(movie_id);
+
+                        String jsonMovieResponse = movieDetailsNetworkUtil
+                                .getResponseFromHttpUrl(MoviesDetailRequestUrl);
+                        ArrayList trailers_josn = new ArrayList<>();
+
+                        try {
+                            trailers_josn = TheMovieDetailsJonUtils
+                                    .simpleJsonMovieDataStringsFromJson(MovieDetailsPage.this, jsonMovieResponse, mMovie);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
+                        return trailers_josn;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+            };
+        }
+
+        @Override
+        public void onLoadFinished(Loader<ArrayList> loader, ArrayList trailers_obj) {
+            Log.d(TAG, "RICK onLoadFinished: " + trailers_obj);
+
+            if (trailers_obj != null) {
+                trailerArrayList = trailers_obj;
+                Log.d(TAG, "PICKLE RICK: " + trailers_obj.toString());
+                mDetailsAdapter.setMovieData(trailers_obj);
+                mDetailsAdapter.notifyDataSetChanged();
+            }
+
+        }
+
+
+        @Override
+        public void onLoaderReset(Loader<ArrayList> loader) {
+
+        }
+
+
+        //--------------------------------------------------------------------------------------------
+    };
 
     @Override
     public void onListItemClick(int clickedItemPosition) {
