@@ -6,5 +6,7 @@
         Failed to get results. Please try again.
     </string>
     <string name="desc">Movie Poster Image</string>
+    <string name="review">Reviews</string>
+    <string name="content">Content</string>
 
 </resources>

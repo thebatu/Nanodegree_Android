@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
-
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;
 import com.example.android.movies1.Utils.reviewDetailsNetworkUtil;
 import com.squareup.picasso.Picasso;
@@ -28,8 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-//LoaderManager.LoaderCallbacks<ArrayList>
-public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.DetailsClickListener {
+public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.DetailsClickListener, DetailsAdapter.ReviewAdapterOnClickHandler {
 
     private String TAG = MovieDetailsPage.class.getSimpleName();
     private RecyclerView dRecyclerView;
@@ -47,10 +45,12 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     private int id;
     Trailer trailers;
     Context context;
+    Review reviews;
 
     Movie mMovie;
     ArrayList<Trailer> trailerArrayList;
-    ArrayList<Trailer> reviewArrayList;
+    ArrayList<Review> reviewArrayList;
+    ArrayList<Object> objectsArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         movieRating = findViewById(R.id.rating);
 
         trailerArrayList = new ArrayList<>();
+        objectsArrayList = new ArrayList<>();
 
 
         /*
@@ -100,7 +101,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             //dRecyclerView.setNestedScrollingEnabled(true);
             dRecyclerView.setHasFixedSize(true);
 
-            mDetailsAdapter = new DetailsAdapter(getApplicationContext(), this, trailerArrayList);
+            mDetailsAdapter = new DetailsAdapter(this,trailerArrayList, reviewArrayList, this, objectsArrayList  );
             dRecyclerView.setAdapter(mDetailsAdapter);
             activateTrailersLoader(id);
             activateReviewLoader(id);
@@ -275,7 +276,6 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
         }
 
-
         //--------------------------------------------------------------------------------------------
     };
 
@@ -288,6 +288,13 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         }
+    }
 
+    @Override
+    public void onClick(int click) {
+        reviews = reviewArrayList.get(click);
+        Intent i = new Intent(this, ReviewContent.class);
+        i.putExtra("reviews",  reviews);
+        startActivity(i);
     }
 }
