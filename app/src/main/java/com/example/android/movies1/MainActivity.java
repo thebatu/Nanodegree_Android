@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        //getSupportLoaderManager().initLoader(SUNSHINE_LOADER, null, this);
-
         loadMoviesData(movieType);
         mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
         mRecyclerView.setAdapter(mMovieAdapter);
@@ -164,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 if (bundle == null) {
                     return;
                 }
-                mRecyclerView.setVisibility(View.VISIBLE);
+                //mRecyclerView.setVisibility(View.VISIBLE);
                 mLoadingIndicator.setVisibility(View.VISIBLE);
             }
         };
