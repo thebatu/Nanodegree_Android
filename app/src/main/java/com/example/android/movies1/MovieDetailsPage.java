@@ -12,8 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
@@ -42,6 +45,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     private TextView movieOverview;
     private TextView movieDate;
     private TextView movieRating;
+    ImageButton star;
     private int id;
     Trailer trailers;
     Context context;
@@ -65,6 +69,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         movieOverview = findViewById(R.id.overview);
         movieDate = findViewById(R.id.date);
         movieRating = findViewById(R.id.rating);
+        star = findViewById(R.id.star);
 
         trailerArrayList = new ArrayList<>();
         objectsArrayList = new ArrayList<>();
@@ -106,8 +111,19 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             activateTrailersLoader(id);
             activateReviewLoader(id);
 
+            star.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    changeStarColor(v);
+                }
+            });
+
         }
         //movieImage.setImageBitmap(movie_obj.getBACKDROP_PATH());
+    }
+
+    private void changeStarColor(View v) {
+        Toast.makeText(getApplicationContext(), "Movie Favorited", Toast.LENGTH_SHORT).show();
     }
 
     /*

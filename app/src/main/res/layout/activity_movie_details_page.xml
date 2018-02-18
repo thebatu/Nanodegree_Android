@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/imageButton_star"
+            android:id="@+id/star"
             android:layout_width="59dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
