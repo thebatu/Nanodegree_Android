@@ -1,10 +1,15 @@
 package com.example.android.movies1;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -18,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.movies1.DataBase.MovieContract;
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;
@@ -49,6 +55,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     private int id;
     Trailer trailers;
     Context context;
+    private boolean isFavorite = false;
     Review reviews;
 
     Movie mMovie;
@@ -112,6 +119,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             activateReviewLoader(id);
 
             star.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(View v) {
                     changeStarColor(v);
@@ -122,8 +130,97 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         //movieImage.setImageBitmap(movie_obj.getBACKDROP_PATH());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void changeStarColor(View v) {
         Toast.makeText(getApplicationContext(), "Movie Favorited", Toast.LENGTH_SHORT).show();
+        if(isFavorite){
+            makeUnfavorite();
+        }else if (!isFavorite) {
+            makeFavorite();
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void makeFavorite() {
+        isFavorite = true;
+        star.setColorFilter(getColor(R.color.Golden));
+        addToDB();
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void makeUnfavorite() {
+        isFavorite = false;
+        star.setColorFilter(getColor(R.color.Grey));
+        deleteFromDB();
+    }
+
+    private void deleteFromDB() {
+        ContentResolver resolver = getContentResolver();
+        String selection = MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+        GridMovieItem item = getIntent().getParcelableExtra("item");
+        String favoriteId = item.getId().toString();
+        long id = Long.parseLong(favoriteId);
+        Log.v(TAG, "Movie id to delete");
+        Uri uri = MovieContract.FavoriteEntry.builtFavoriteUri(id);
+
+        String[] args = new String[]{
+                String.valueOf(ContentUris.parseId(uri))
+
+        };
+        try {
+            int rowsDeleted = resolver.delete(MovieContract.FavoriteEntry.CONTENT_URI,
+                    selection,
+                    args);
+            if (rowsDeleted == -1) {
+                Log.e(TAG, "Error deleting row from DB");
+
+            } else {
+                Log.v(TAG, "Row Deleted");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error performing delete", e);
+
+        }
+    }
+
+    private void addToDB() {
+        if (movieTitle == null || movieDate == null ||
+                movieRating == null || movieOverview == null) {
+            Log.e(TAG, "Empty movie data in TextViews");
+            finish();
+            return;
+        }
+        GridMovieItem item = getIntent().getParcelableExtra("movie_obj");
+        String imageString = item.getPosterPath();
+
+        String favoriteTitle = item.getOriginalTitle();
+        String favoriteMovieId = item.getId().toString();
+        String favoriteDate = item.getReleaseDate();
+        String favoriteRating = item.getVoteAverage();
+        String favoriteOverview = item.getOverview();
+
+
+        long id = 0;
+        if (favoriteMovieId != null) {
+            id = Long.parseLong(favoriteMovieId);
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, id);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, favoriteTitle);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE, favoriteDate);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RATING, favoriteRating);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_OVERVIEW, favoriteOverview);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_POSTER, imageString);
+        try {
+            Uri newUri = getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,
+                    contentValues);
+            Log.v(TAG, "Uri: " + newUri.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Error inserting movie to DB", e);
+        }
     }
 
     /*

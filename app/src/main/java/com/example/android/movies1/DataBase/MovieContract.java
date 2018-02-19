@@ -1,6 +1,7 @@
 package com.example.android.movies1.DataBase;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -37,6 +38,13 @@ public class MovieContract {
         public static final String COLUMN_RATING = "movie_rating";
         public static final String COLUMN_RELEASE_DATE = "movie_release_date";
         public static final String COLUMN_OVERVIEW = "movie_overview";
+
+        public static Uri builtFavoriteUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
     }
+
+
 
 }
