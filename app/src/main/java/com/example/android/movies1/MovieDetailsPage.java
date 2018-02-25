@@ -145,8 +145,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     private void makeFavorite() {
         isFavorite = true;
         star.setColorFilter(getColor(R.color.Golden));
-        addToDB();
-
+        addToDBMakeFav();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -185,22 +184,22 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }
     }
 
-    private void addToDB() {
+    private void addToDBMakeFav() {
         if (movieTitle == null || movieDate == null ||
                 movieRating == null || movieOverview == null) {
             Log.e(TAG, "Empty movie data in TextViews");
             finish();
             return;
         }
-        GridMovieItem item = getIntent().getParcelableExtra("movie_obj");
-        String imageString = item.getPosterPath();
 
-        String favoriteTitle = item.getOriginalTitle();
-        String favoriteMovieId = item.getId().toString();
-        String favoriteDate = item.getReleaseDate();
-        String favoriteRating = item.getVoteAverage();
-        String favoriteOverview = item.getOverview();
+        Movie item =  getIntent().getParcelableExtra("movie_obj");
 
+        String imageString = item.getBACKDROP_PATH();
+        String favoriteTitle = item.getTITLE();
+        String favoriteMovieId = item.getID().toString();
+        String favoriteDate = item.getRELEASE_DATE();
+        String favoriteRating = item.getVOTE_AVERAGE();
+        String favoriteOverview = item.getOVERVIEW();
 
         long id = 0;
         if (favoriteMovieId != null) {
@@ -210,10 +209,10 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         ContentValues contentValues = new ContentValues();
         contentValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, id);
         contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, favoriteTitle);
-        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE, favoriteDate);
-        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RATING, favoriteRating);
-        contentValues.put(MovieContract.FavoriteEntry.COLUMN_OVERVIEW, favoriteOverview);
         contentValues.put(MovieContract.FavoriteEntry.COLUMN_POSTER, imageString);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RATING, favoriteRating);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE, favoriteDate);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_OVERVIEW, favoriteOverview);
         try {
             Uri newUri = getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,
                     contentValues);
