@@ -6,7 +6,9 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -52,6 +54,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     private TextView movieDate;
     private TextView movieRating;
     ImageButton star;
+    Cursor mData;
     private int id;
     Trailer trailers;
     Context context;
@@ -118,6 +121,10 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             activateTrailersLoader(id);
             activateReviewLoader(id);
 
+
+            FetchQueryOfDatabase task = new FetchQueryOfDatabase();
+            task.execute();
+
             star.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
@@ -138,7 +145,6 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }else if (!isFavorite) {
             makeFavorite();
         }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -146,6 +152,18 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         isFavorite = true;
         star.setColorFilter(getColor(R.color.Golden));
         addToDBMakeFav();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void makeStarGolden(){
+        isFavorite = true;
+        star.setColorFilter(getColor(R.color.Golden));
+    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void makeStarGrey(){
+        isFavorite = false;
+        star.setColorFilter(getColor(R.color.Grey));
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -221,6 +239,73 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             Log.e(TAG, "Error inserting movie to DB", e);
         }
     }
+
+
+    ///----------------------------------------------------------------------------------
+    private class FetchQueryOfDatabase extends AsyncTask<Void, Void, Cursor> {
+
+        Movie item = getIntent().getParcelableExtra("movie_obj");
+        int id = Integer.parseInt(item.getID());
+        long id1 = Long.valueOf(id);
+
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            ContentResolver resolver = getContentResolver();
+
+            String[] projection = {
+                    MovieContract.FavoriteEntry.COLUMN_MOVIE_ID
+            };
+            String selection = MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+            Uri uri = MovieContract.FavoriteEntry.builtFavoriteUri(id1);
+            String[] args = new String[]{
+                    String.valueOf(ContentUris.parseId(uri))
+
+            };
+            Cursor cursor = null;
+            try {
+                cursor = resolver.query(
+                        MovieContract.FavoriteEntry.CONTENT_URI,
+                        projection,
+                        selection,
+                        args,
+                        null
+                );
+            } catch (Exception e) {
+                Log.e("Can't query database", e.toString());
+
+            }
+
+
+            return cursor;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+            mData = cursor;
+            if (null == mData) {
+                Log.e(TAG, "Cursor is not working");
+
+            } else if (cursor.getCount() < 1) {
+                makeStarGrey();
+                Log.v(TAG, "Movie ID not inside DATABASE");
+            } else if (mData.moveToFirst()) {
+                for (int j = 0; j < mData.getCount(); j++) {
+                    if (mData.getCount() > 0) {
+                        makeStarGolden();
+                    } else {
+                        makeStarGrey();
+                    }
+                    Log.v(TAG, "This movie is in your DATABASE.");
+                }
+                mData.close();
+            }
+        }
+    }
+
+    ///----------------------------------------------------------------------------------
+
 
     /*
         int id --> the ID of the movie clicked on
