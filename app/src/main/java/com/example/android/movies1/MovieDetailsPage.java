@@ -108,19 +108,19 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             movieRating.setText(rate);
 
             id = Integer.parseInt(movie_obj.getID());
+        }
 
             LinearLayoutManager dLayoutManager
                     = new LinearLayoutManager(this);
 
             dRecyclerView.setLayoutManager(dLayoutManager);
-            //dRecyclerView.setNestedScrollingEnabled(true);
             dRecyclerView.setHasFixedSize(true);
+
+            activateReviewLoader(id);
+            activateTrailersLoader(id);
 
             mDetailsAdapter = new DetailsAdapter(this,trailerArrayList, reviewArrayList, this, objectsArrayList  );
             dRecyclerView.setAdapter(mDetailsAdapter);
-            activateTrailersLoader(id);
-            activateReviewLoader(id);
-
 
             FetchQueryOfDatabase task = new FetchQueryOfDatabase();
             task.execute();
@@ -133,8 +133,6 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
                 }
             });
 
-        }
-        //movieImage.setImageBitmap(movie_obj.getBACKDROP_PATH());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -274,8 +272,6 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
                 Log.e("Can't query database", e.toString());
 
             }
-
-
             return cursor;
         }
 
@@ -388,9 +384,9 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             Log.d(TAG, "RICK onLoadFinished: " + reviewsList);
 
             if (reviewsList != null) {
-                reviewArrayList = reviewsList;
                 Log.d(TAG, "PICKLE RICK: " + reviewsList.toString());
                 mDetailsAdapter.setReiewData(reviewsList);
+                reviewArrayList = reviewsList;
                 mDetailsAdapter.notifyDataSetChanged();
             }
 
@@ -459,10 +455,10 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             Log.d(TAG, "RICK onLoadFinished: " + trailers_obj);
 
             if (trailers_obj != null) {
-                trailerArrayList = trailers_obj;
                 Log.d(TAG, "PICKLE RICK: " + trailers_obj.toString());
                 mDetailsAdapter.setMovieData(trailers_obj);
-                mDetailsAdapter.notifyDataSetChanged();
+                trailerArrayList = trailers_obj;
+                //mDetailsAdapter.notifyDataSetChanged();
             }
 
         }
