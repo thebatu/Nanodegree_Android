@@ -1,10 +1,17 @@
 package com.example.android.movies1;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -12,9 +19,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.android.movies1.DataBase.MovieContract;
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;
@@ -42,9 +53,12 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     private TextView movieOverview;
     private TextView movieDate;
     private TextView movieRating;
+    ImageButton star;
+    Cursor mData;
     private int id;
     Trailer trailers;
     Context context;
+    private boolean isFavorite = false;
     Review reviews;
 
     Movie mMovie;
@@ -65,6 +79,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         movieOverview = findViewById(R.id.overview);
         movieDate = findViewById(R.id.date);
         movieRating = findViewById(R.id.rating);
+        star = findViewById(R.id.star);
 
         trailerArrayList = new ArrayList<>();
         objectsArrayList = new ArrayList<>();
@@ -93,22 +108,200 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             movieRating.setText(rate);
 
             id = Integer.parseInt(movie_obj.getID());
+        }
 
             LinearLayoutManager dLayoutManager
                     = new LinearLayoutManager(this);
 
             dRecyclerView.setLayoutManager(dLayoutManager);
-            //dRecyclerView.setNestedScrollingEnabled(true);
             dRecyclerView.setHasFixedSize(true);
+
+            activateReviewLoader(id);
+            activateTrailersLoader(id);
 
             mDetailsAdapter = new DetailsAdapter(this,trailerArrayList, reviewArrayList, this, objectsArrayList  );
             dRecyclerView.setAdapter(mDetailsAdapter);
-            activateTrailersLoader(id);
-            activateReviewLoader(id);
+
+            FetchQueryOfDatabase task = new FetchQueryOfDatabase();
+            task.execute();
+
+            star.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void onClick(View v) {
+                    changeStarColor(v);
+                }
+            });
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void changeStarColor(View v) {
+        Toast.makeText(getApplicationContext(), "Movie Favorited", Toast.LENGTH_SHORT).show();
+        if(isFavorite){
+            makeUnfavorite();
+        }else if (!isFavorite) {
+            makeFavorite();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void makeFavorite() {
+        isFavorite = true;
+        star.setColorFilter(getColor(R.color.Golden));
+        addToDBMakeFav();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void makeStarGolden(){
+        isFavorite = true;
+        star.setColorFilter(getColor(R.color.Golden));
+    }
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void makeStarGrey(){
+        isFavorite = false;
+        star.setColorFilter(getColor(R.color.Grey));
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void makeUnfavorite() {
+        isFavorite = false;
+        star.setColorFilter(getColor(R.color.Grey));
+        deleteFromDB();
+    }
+
+    private void deleteFromDB() {
+        ContentResolver resolver = getContentResolver();
+        String selection = MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+        GridMovieItem item = getIntent().getParcelableExtra("item");
+        String favoriteId = item.getId().toString();
+        long id = Long.parseLong(favoriteId);
+        Log.v(TAG, "Movie id to delete");
+        Uri uri = MovieContract.FavoriteEntry.builtFavoriteUri(id);
+
+        String[] args = new String[]{
+                String.valueOf(ContentUris.parseId(uri))
+
+        };
+        try {
+            int rowsDeleted = resolver.delete(MovieContract.FavoriteEntry.CONTENT_URI,
+                    selection,
+                    args);
+            if (rowsDeleted == -1) {
+                Log.e(TAG, "Error deleting row from DB");
+
+            } else {
+                Log.v(TAG, "Row Deleted");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error performing delete", e);
 
         }
-        //movieImage.setImageBitmap(movie_obj.getBACKDROP_PATH());
     }
+
+    private void addToDBMakeFav() {
+        if (movieTitle == null || movieDate == null ||
+                movieRating == null || movieOverview == null) {
+            Log.e(TAG, "Empty movie data in TextViews");
+            finish();
+            return;
+        }
+
+        Movie item =  getIntent().getParcelableExtra("movie_obj");
+
+        String imageString = item.getBACKDROP_PATH();
+        String favoriteTitle = item.getTITLE();
+        String favoriteMovieId = item.getID().toString();
+        String favoriteDate = item.getRELEASE_DATE();
+        String favoriteRating = item.getVOTE_AVERAGE();
+        String favoriteOverview = item.getOVERVIEW();
+
+        long id = 0;
+        if (favoriteMovieId != null) {
+            id = Long.parseLong(favoriteMovieId);
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, id);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_TITLE, favoriteTitle);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_POSTER, imageString);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RATING, favoriteRating);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE, favoriteDate);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_OVERVIEW, favoriteOverview);
+        try {
+            Uri newUri = getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,
+                    contentValues);
+            Log.v(TAG, "Uri: " + newUri.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Error inserting movie to DB", e);
+        }
+    }
+
+
+    ///----------------------------------------------------------------------------------
+    private class FetchQueryOfDatabase extends AsyncTask<Void, Void, Cursor> {
+
+        Movie item = getIntent().getParcelableExtra("movie_obj");
+        int id = Integer.parseInt(item.getID());
+        long id1 = Long.valueOf(id);
+
+        @Override
+        protected Cursor doInBackground(Void... params) {
+            ContentResolver resolver = getContentResolver();
+
+            String[] projection = {
+                    MovieContract.FavoriteEntry.COLUMN_MOVIE_ID
+            };
+            String selection = MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+            Uri uri = MovieContract.FavoriteEntry.builtFavoriteUri(id1);
+            String[] args = new String[]{
+                    String.valueOf(ContentUris.parseId(uri))
+
+            };
+            Cursor cursor = null;
+            try {
+                cursor = resolver.query(
+                        MovieContract.FavoriteEntry.CONTENT_URI,
+                        projection,
+                        selection,
+                        args,
+                        null
+                );
+            } catch (Exception e) {
+                Log.e("Can't query database", e.toString());
+
+            }
+            return cursor;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+            mData = cursor;
+            if (null == mData) {
+                Log.e(TAG, "Cursor is not working");
+
+            } else if (cursor.getCount() < 1) {
+                makeStarGrey();
+                Log.v(TAG, "Movie ID not inside DATABASE");
+            } else if (mData.moveToFirst()) {
+                for (int j = 0; j < mData.getCount(); j++) {
+                    if (mData.getCount() > 0) {
+                        makeStarGolden();
+                    } else {
+                        makeStarGrey();
+                    }
+                    Log.v(TAG, "This movie is in your DATABASE.");
+                }
+                mData.close();
+            }
+        }
+    }
+
+    ///----------------------------------------------------------------------------------
+
 
     /*
         int id --> the ID of the movie clicked on
@@ -191,9 +384,9 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             Log.d(TAG, "RICK onLoadFinished: " + reviewsList);
 
             if (reviewsList != null) {
-                reviewArrayList = reviewsList;
                 Log.d(TAG, "PICKLE RICK: " + reviewsList.toString());
                 mDetailsAdapter.setReiewData(reviewsList);
+                reviewArrayList = reviewsList;
                 mDetailsAdapter.notifyDataSetChanged();
             }
 
@@ -262,10 +455,10 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             Log.d(TAG, "RICK onLoadFinished: " + trailers_obj);
 
             if (trailers_obj != null) {
-                trailerArrayList = trailers_obj;
                 Log.d(TAG, "PICKLE RICK: " + trailers_obj.toString());
                 mDetailsAdapter.setMovieData(trailers_obj);
-                mDetailsAdapter.notifyDataSetChanged();
+                trailerArrayList = trailers_obj;
+                //mDetailsAdapter.notifyDataSetChanged();
             }
 
         }

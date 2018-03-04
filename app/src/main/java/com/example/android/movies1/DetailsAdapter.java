@@ -139,9 +139,14 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        if (trailer.size() != 0 &&  review.size() !=0){
-            return trailer.size() + review.size();
+//        if (trailer.size() != 0 &&  review.size() !=0 && trailer != null && review != null){
+        if (trailer != null && review != null) {
+            return review.size() + trailer.size();
         }
+        else if (review == null) {
+            return trailer.size();
+        }
+
         return 0;
     }
 
