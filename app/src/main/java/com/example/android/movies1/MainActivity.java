@@ -2,6 +2,7 @@ package com.example.android.movies1;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -9,12 +10,15 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.movies1.Adapers.MovieAdapter;
+import com.example.android.movies1.DataBase.MovieContract;
 import com.example.android.movies1.Utils.NetworkUtils;
 import com.example.android.movies1.Utils.TheMovieDBJsonUtils;
 
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
+    private  static final int FAV_LOADER_ID = 666;
     private ProgressBar mLoadingIndicator;
     private final int SUNSHINE_LOADER = 22;
     private static final String SUNSHINE_LOADER_EXTRA = "query";
@@ -101,19 +106,94 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item){
         int menuItemSelected = item.getItemId();
         if (menuItemSelected == R.id.top_rated){
             movieType = "top_rated";
             showMoviesDataView();
             loadMoviesData(movieType);
-        }else {
+            return true;
+        }else if (menuItemSelected == R.id.popular){
 
             movieType = "popular";
             showMoviesDataView();
             loadMoviesData(movieType);
+            return true;
+        }else  (menuItemSelected == R.id.favorite_movies){
+            showMoviesDataView();
+            favoriteLoader();
+            return true;
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void favoriteLoader() {
+        getSupportLoaderManager().initLoader(FAV_LOADER_ID, null, favoriteLoader).forceLoad();
+    }
+
+
+    private LoaderManager.LoaderCallbacks<Cursor> favoriteLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @SuppressLint("StaticFieldLeak")
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+            return new AsyncTaskLoader<Cursor>(getApplicationContext()) {
+
+                Cursor fav = null;
+
+                @Override
+                protected void onStartLoading() {
+                    forceLoad();
+                }
+
+                @Override
+                public Cursor loadInBackground() {
+                    try {
+                        return getContentResolver().query(
+                                MovieContract.FavoriteEntry.CONTENT_URI,
+                                null,
+                                null,
+                                null,
+                                null
+                        );
+
+
+                    }catch (Exception e){
+                        return null;
+                    }
+                }
+
+                @Override
+                public void deliverResult(Cursor data) {
+
+                    fav = data;
+                    super.deliverResult(data);
+                }
+            };
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+            mAdapter.setData(null);
+
+            if (loader.getId() == FAV_LOADER_ID){
+                if ( data.getCount() < 1) {
+                    Log.e(TAG, "no match" );
+                }else {
+                    mAdapter.clear();
+                    while (data.moveToNext()){
+
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
     }
 
     @Override

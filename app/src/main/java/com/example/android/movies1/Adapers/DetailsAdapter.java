@@ -1,4 +1,4 @@
-package com.example.android.movies1;
+package com.example.android.movies1.Adapers;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.movies1.R;
+import com.example.android.movies1.Review;
+import com.example.android.movies1.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -158,8 +161,6 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             return REVIEWS_ID;
         }
-
-
     }
 
 

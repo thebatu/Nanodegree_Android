@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.movies1.Adapers.DetailsAdapter;
 import com.example.android.movies1.DataBase.MovieContract;
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
