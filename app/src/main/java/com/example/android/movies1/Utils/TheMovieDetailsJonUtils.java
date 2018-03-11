@@ -3,8 +3,8 @@ package com.example.android.movies1.Utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.android.movies1.Movie;
-import com.example.android.movies1.Trailer;
+import com.example.android.movies1.Models.Movie;
+import com.example.android.movies1.Models.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -2,7 +2,7 @@ package com.example.android.movies1.Utils;
 
 import android.content.Context;
 import android.util.Log;
-import com.example.android.movies1.Movie;
+import com.example.android.movies1.Models.Movie;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

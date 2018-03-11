@@ -27,6 +27,9 @@ import android.widget.Toast;
 
 import com.example.android.movies1.Adapers.DetailsAdapter;
 import com.example.android.movies1.DataBase.MovieContract;
+import com.example.android.movies1.Models.Movie;
+import com.example.android.movies1.Models.Review;
+import com.example.android.movies1.Models.Trailer;
 import com.example.android.movies1.Utils.TheMovieDetailsJonUtils;
 import com.example.android.movies1.Utils.TheReviewDetailsJsonUtils;
 import com.example.android.movies1.Utils.movieDetailsNetworkUtil;

@@ -10,8 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.movies1.R;
-import com.example.android.movies1.Review;
-import com.example.android.movies1.Trailer;
+import com.example.android.movies1.Models.Review;
+import com.example.android.movies1.Models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
