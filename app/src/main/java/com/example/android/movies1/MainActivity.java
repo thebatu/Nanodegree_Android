@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private ImageAdapter mAdapter;
-    private GridView mGridView;
     private TextView errText;
     private  static final int FAV_LOADER_ID = 666;
     private ProgressBar mLoadingIndicator;
@@ -48,19 +47,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String BUNDLE_INSTANCE = "HUMBLE_BUNDLE";
     private String movieType = "popular";
     private ArrayList<GridMovieItem> movieList;
-
-
+    private GridView mGridView;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(BUNDLE_INSTANCE,movieType);
-    }
+        outState.putParcelableArrayList("movies", movieList);
+        }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mGridView = (GridView) findViewById(R.id.gvMain);
 
         //mGridView = findViewById(R.id.gvMain);
         mRecyclerView =  findViewById(R.id.rv_mainMovies);
@@ -82,7 +84,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-       // mGridView.setAdapter(mAdapter);
+
+        // Here is the problem...
+        mAdapter = new ImageAdapter(getApplicationContext(), movieList );
+        mGridView.setAdapter(mAdapter);
 
     }
 
