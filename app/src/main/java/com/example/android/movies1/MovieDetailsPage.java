@@ -176,10 +176,11 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
     }
 
     private void deleteFromDB() {
+
         ContentResolver resolver = getContentResolver();
         String selection = MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
-        GridMovieItem item = getIntent().getParcelableExtra("item");
-        String favoriteId = item.getId().toString();
+        Movie item = getIntent().getParcelableExtra("movie_obj");
+        String favoriteId = item.getID().toString();
         long id = Long.parseLong(favoriteId);
         Log.v(TAG, "Movie id to delete");
         Uri uri = MovieContract.FavoriteEntry.builtFavoriteUri(id);

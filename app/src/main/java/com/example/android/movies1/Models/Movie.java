@@ -10,7 +10,6 @@ import android.os.Parcelable;
 
 public class Movie implements Parcelable {
     private String ID = "id";
-    private String RESULTS = "results";
     private String RELEASE_DATE = "release_date";
     private String VOTE_AVERAGE = "vote_average";
     private String POSTER_PATH = "poster_path";
@@ -26,7 +25,6 @@ public class Movie implements Parcelable {
     private Movie(Parcel in){
         //read and set saved values from parcel
         ID = in.readString();
-        RESULTS = in.readString();
         RELEASE_DATE = in.readString();
         VOTE_AVERAGE = in.readString();
         POSTER_PATH = in.readString();
@@ -34,6 +32,7 @@ public class Movie implements Parcelable {
         OVERVIEW = in.readString();
         TITLE = in.readString();
     }
+
 
     //return hashcode of object
     @Override
@@ -62,7 +61,6 @@ public class Movie implements Parcelable {
 
         //write all properties to the parcle
         dest.writeString(ID);
-        dest.writeString(RESULTS);
         dest.writeString(RELEASE_DATE);
         dest.writeString(VOTE_AVERAGE);
         dest.writeString(POSTER_PATH);
@@ -72,14 +70,6 @@ public class Movie implements Parcelable {
 
     }
 
-
-    public String getRESULTS() {
-        return RESULTS;
-    }
-
-    public void setRESULTS(String RESULTS) {
-        this.RESULTS = RESULTS;
-    }
 
     public String getOVERVIEW() {
         return OVERVIEW;

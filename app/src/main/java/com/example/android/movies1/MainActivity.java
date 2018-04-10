@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
-    private ImageAdapter mAdapter;
+    private ImageAdapter mFavoriteAdapter;
     private TextView errText;
     private  static final int FAV_LOADER_ID = 666;
     private ProgressBar mLoadingIndicator;
@@ -46,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String SUNSHINE_LOADER_EXTRA = "query";
     private static final String BUNDLE_INSTANCE = "HUMBLE_BUNDLE";
     private String movieType = "popular";
-    private ArrayList<GridMovieItem> movieList;
-    private GridView mGridView;
+    private ArrayList<Movie> movieList;
+    private RecyclerView mFavRecyclerView;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mGridView = (GridView) findViewById(R.id.gvMain);
+        mFavRecyclerView = findViewById(R.id.rv_favMoviesMovies);
 
         //mGridView = findViewById(R.id.gvMain);
         mRecyclerView =  findViewById(R.id.rv_mainMovies);
@@ -86,8 +85,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
         // Here is the problem...
-        mAdapter = new ImageAdapter(getApplicationContext(), movieList );
-        mGridView.setAdapter(mAdapter);
+
+
+//        GridLayoutManager layoutManagerFavMovies
+//                = new GridLayoutManager(this, 2);
+//
+//        mFavoriteAdapter = new ImageAdapter(getApplicationContext(), movieList );
+//        mFavRecyclerView.setAdapter(mFavoriteAdapter);
 
     }
 
@@ -103,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle, this).forceLoad();
         }
-
     }
 
     private void showMoviesDataView() {
@@ -193,13 +196,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-            mAdapter.setData(null);
+            mFavoriteAdapter.setData(null);
 
             if (loader.getId() == FAV_LOADER_ID){
                 if ( data.getCount() < 1) {
                     Log.e(TAG, "no match" );
                 }else {
-                    mAdapter.clear();
+                    mFavoriteAdapter.clear();
                     while (data.moveToNext()){
                         int movieId = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID);
                         int movieTitle = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_TITLE);
@@ -207,33 +210,34 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                         int movieOverview = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_OVERVIEW);
                         int movieRating = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_RATING);
                         int movieDate = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE);
+                        int movieBackdrop= data.getColumnIndex(MovieContract.FavoriteEntry.BACKDROP_PATH);
 
-
-                        long id = data.getLong(movieId);
+                        String id = data.getString(movieId);
                         String title = data.getString(movieTitle);
                         String poster = data.getString(moviePoster);
                         String overview = data.getString(movieOverview);
                         String rating = data.getString(movieRating);
                         String date = data.getString(movieDate);
+                        String backdrop = data.getString(movieBackdrop);
 
-                        movieList.add(new GridMovieItem(poster, id, title, overview, rating, date));
+                        movieList.add(new Movie(id, date, rating, poster, backdrop , overview, title));
                     }
-                    mAdapter.setData(movieList);
+                    mFavoriteAdapter.setData(movieList);
                     Log.v(TAG, "Favorites List have data");
                 }
             }else {
-                mAdapter.clearMoviePosterData();
+                mFavoriteAdapter.clearMoviePosterData();
 
             }
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            mAdapter.clearMoviePosterData();
+            mFavoriteAdapter.clearMoviePosterData();
             if (loader != null) {
-                mAdapter.clearMoviePosterData();
+                mFavoriteAdapter.clearMoviePosterData();
             } else {
-                mAdapter.setData(null);
+                mFavoriteAdapter.setData(null);
             }
         }
     };

@@ -12,6 +12,35 @@ public class GridMovieItem implements Parcelable {
     private String posterPath;
     private String originalTitle;
     private String overview;
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setVoteAverage(String voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public static Creator<GridMovieItem> getCREATOR() {
+        return CREATOR;
+    }
+
     private String voteAverage;
     private String releaseDate;
     private Long id;
