@@ -81,6 +81,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     }
 
+    public void clearMoviePosterData() {
+        mMovies.clear();
+        notifyDataSetChanged();
+    }
+
     //-----------------------
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView listMovieNumberView;
@@ -98,5 +103,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             Movie clickedOnMovie = mMovies.get(clickedPosition);
             mOnMovieClickListener.onMovieItemClick(clickedPosition, clickedOnMovie);
         }
+
     }
 }

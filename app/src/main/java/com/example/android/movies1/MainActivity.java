@@ -196,13 +196,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-            mFavoriteAdapter.setData(null);
+            mMovieAdapter.setMovieData(null);
 
             if (loader.getId() == FAV_LOADER_ID){
                 if ( data.getCount() < 1) {
                     Log.e(TAG, "no match" );
                 }else {
-                    mFavoriteAdapter.clear();
+                    //mFavoriteAdapter.clear();
                     while (data.moveToNext()){
                         int movieId = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID);
                         int movieTitle = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_TITLE);
@@ -222,22 +222,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                         movieList.add(new Movie(id, date, rating, poster, backdrop , overview, title));
                     }
-                    mFavoriteAdapter.setData(movieList);
+                    //mFavoriteAdapter.setData(movieList);
+                    mMovieAdapter.clearMoviePosterData();
+                    mMovieAdapter.setMovieData(movieList);
                     Log.v(TAG, "Favorites List have data");
                 }
             }else {
-                mFavoriteAdapter.clearMoviePosterData();
-
+                //mFavoriteAdapter.clearMoviePosterData();
+                mMovieAdapter.clearMoviePosterData();
             }
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            mFavoriteAdapter.clearMoviePosterData();
+            mMovieAdapter.clearMoviePosterData();
             if (loader != null) {
-                mFavoriteAdapter.clearMoviePosterData();
+                mMovieAdapter.clearMoviePosterData();;
             } else {
-                mFavoriteAdapter.setData(null);
+                mMovieAdapter.setMovieData(null);
             }
         }
     };

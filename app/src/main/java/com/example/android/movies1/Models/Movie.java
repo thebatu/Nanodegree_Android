@@ -33,6 +33,17 @@ public class Movie implements Parcelable {
         TITLE = in.readString();
     }
 
+    public Movie(String id, String date, String rating, String poster, String backdrop, String overview, String title) {
+        this.setID(id);
+        this.setRELEASE_DATE(date);
+        this.setVOTE_AVERAGE(rating);
+        this.setPOSTER_PATH(poster);
+        this.setBACKDROP_PATH(backdrop);
+        this.setOVERVIEW(overview);
+        this.setTITLE(title);
+
+    }
+
 
     //return hashcode of object
     @Override
