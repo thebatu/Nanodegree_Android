@@ -123,7 +123,8 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             activateReviewLoader(id);
             activateTrailersLoader(id);
 
-            mDetailsAdapter = new DetailsAdapter(this,trailerArrayList, reviewArrayList, this, objectsArrayList  );
+            mDetailsAdapter = new DetailsAdapter(this,trailerArrayList,
+                    reviewArrayList, this, objectsArrayList  );
             dRecyclerView.setAdapter(mDetailsAdapter);
 
             FetchQueryOfDatabase task = new FetchQueryOfDatabase();
@@ -180,7 +181,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         ContentResolver resolver = getContentResolver();
         String selection = MovieContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
         Movie item = getIntent().getParcelableExtra("movie_obj");
-        String favoriteId = item.getID().toString();
+        String favoriteId = item.getID();
         long id = Long.parseLong(favoriteId);
         Log.v(TAG, "Movie id to delete");
         Uri uri = MovieContract.FavoriteEntry.builtFavoriteUri(id);
@@ -217,10 +218,11 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
         String imageString = item.getBACKDROP_PATH();
         String favoriteTitle = item.getTITLE();
-        String favoriteMovieId = item.getID().toString();
+        String favoriteMovieId = item.getID();
         String favoriteDate = item.getRELEASE_DATE();
         String favoriteRating = item.getVOTE_AVERAGE();
         String favoriteOverview = item.getOVERVIEW();
+        String backdrop_path = item.getBACKDROP_PATH();
 
         long id = 0;
         if (favoriteMovieId != null) {
@@ -234,6 +236,8 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         contentValues.put(MovieContract.FavoriteEntry.COLUMN_RATING, favoriteRating);
         contentValues.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE, favoriteDate);
         contentValues.put(MovieContract.FavoriteEntry.COLUMN_OVERVIEW, favoriteOverview);
+        contentValues.put(MovieContract.FavoriteEntry.COLUMN_BACKDROP_PATH, backdrop_path);
+
         try {
             Uri newUri = getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,
                     contentValues);
@@ -249,7 +253,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
         Movie item = getIntent().getParcelableExtra("movie_obj");
         int id = Integer.parseInt(item.getID());
-        long id1 = Long.valueOf(id);
+        long id1 = id;
 
         @Override
         protected Cursor doInBackground(Void... params) {
@@ -457,13 +461,10 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
         @Override
         public void onLoadFinished(Loader<ArrayList> loader, ArrayList trailers_obj) {
-            Log.d(TAG, "RICK onLoadFinished: " + trailers_obj);
-
             if (trailers_obj != null) {
                 Log.d(TAG, "PICKLE RICK: " + trailers_obj.toString());
                 mDetailsAdapter.setMovieData(trailers_obj);
                 trailerArrayList = trailers_obj;
-                //mDetailsAdapter.notifyDataSetChanged();
             }
 
         }

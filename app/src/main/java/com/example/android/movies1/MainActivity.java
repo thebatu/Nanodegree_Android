@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.android.movies1.Adapers.ImageAdapter;
 import com.example.android.movies1.Adapers.MovieAdapter;
 import com.example.android.movies1.DataBase.MovieContract;
 import com.example.android.movies1.Models.Movie;
@@ -30,19 +29,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-//import android.app.LoaderManager;
-
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener, LoaderManager.LoaderCallbacks<ArrayList> {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener,
+        LoaderManager.LoaderCallbacks<ArrayList> {
 
     private final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
-    private ImageAdapter mFavoriteAdapter;
     private TextView errText;
     private  static final int FAV_LOADER_ID = 666;
     private ProgressBar mLoadingIndicator;
-    private final int SUNSHINE_LOADER = 22;
-    private static final String SUNSHINE_LOADER_EXTRA = "query";
+    private final int MOVIES_LOADER = 22;
+    private static final String MOVIES_LOADER_EXTRA = "query";
     private static final String BUNDLE_INSTANCE = "HUMBLE_BUNDLE";
     private String movieType = "popular";
     private ArrayList<Movie> movieList;
@@ -55,15 +52,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         outState.putParcelableArrayList("movies", movieList);
         }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mFavRecyclerView = findViewById(R.id.rv_favMoviesMovies);
-
-        //mGridView = findViewById(R.id.gvMain);
         mRecyclerView =  findViewById(R.id.rv_mainMovies);
         errText = findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
@@ -83,34 +77,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
-
-        // Here is the problem...
-
-
-//        GridLayoutManager layoutManagerFavMovies
-//                = new GridLayoutManager(this, 2);
-//
-//        mFavoriteAdapter = new ImageAdapter(getApplicationContext(), movieList );
-//        mFavRecyclerView.setAdapter(mFavoriteAdapter);
-
     }
 
     private void loadMoviesData(String s) {
 
         Bundle queryBundle = new Bundle();
-        queryBundle.putString(SUNSHINE_LOADER_EXTRA ,movieType);
+        queryBundle.putString(MOVIES_LOADER_EXTRA,movieType);
 
         LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<String> MoviesSearchLoader = loaderManager.getLoader(SUNSHINE_LOADER);
+        Loader<String> MoviesSearchLoader = loaderManager.getLoader(MOVIES_LOADER);
         if (MoviesSearchLoader  == null) {
-            loaderManager.initLoader(SUNSHINE_LOADER, queryBundle, this).forceLoad();
+            loaderManager.initLoader(MOVIES_LOADER, queryBundle, this).forceLoad();
         } else {
-            loaderManager.restartLoader(SUNSHINE_LOADER, queryBundle, this).forceLoad();
+            loaderManager.restartLoader(MOVIES_LOADER, queryBundle, this).forceLoad();
         }
     }
 
-    private void showMoviesDataView() {
+    private void showMoviesRecyclerView() {
         errText.setVisibility(View.GONE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -130,18 +115,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int menuItemSelected = item.getItemId();
         if (menuItemSelected == R.id.top_rated){
             movieType = "top_rated";
-            showMoviesDataView();
+            showMoviesRecyclerView();
             loadMoviesData(movieType);
             return true;
 
         }else if (menuItemSelected == R.id.popular){
 
             movieType = "popular";
-            showMoviesDataView();
+            showMoviesRecyclerView();
             loadMoviesData(movieType);
             return true;
         }else if  (menuItemSelected == R.id.favorite_movies) {
-            showMoviesDataView();
+            movieType = "favorite";
+            showMoviesRecyclerView();
             favoriteLoader();
             return true;
 
@@ -198,11 +184,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             mMovieAdapter.setMovieData(null);
 
+            movieList = new ArrayList<>();
+
             if (loader.getId() == FAV_LOADER_ID){
                 if ( data.getCount() < 1) {
                     Log.e(TAG, "no match" );
                 }else {
-                    //mFavoriteAdapter.clear();
                     while (data.moveToNext()){
                         int movieId = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID);
                         int movieTitle = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_TITLE);
@@ -210,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                         int movieOverview = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_OVERVIEW);
                         int movieRating = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_RATING);
                         int movieDate = data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE);
-                        int movieBackdrop= data.getColumnIndex(MovieContract.FavoriteEntry.BACKDROP_PATH);
+                        int movieBackdrop= data.getColumnIndex(MovieContract.FavoriteEntry.COLUMN_BACKDROP_PATH);
 
                         String id = data.getString(movieId);
                         String title = data.getString(movieTitle);
@@ -222,13 +209,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                         movieList.add(new Movie(id, date, rating, poster, backdrop , overview, title));
                     }
-                    //mFavoriteAdapter.setData(movieList);
                     mMovieAdapter.clearMoviePosterData();
                     mMovieAdapter.setMovieData(movieList);
                     Log.v(TAG, "Favorites List have data");
                 }
             }else {
-                //mFavoriteAdapter.clearMoviePosterData();
                 mMovieAdapter.clearMoviePosterData();
             }
         }
@@ -258,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return new AsyncTaskLoader<ArrayList>(this) {
             @Override
             public ArrayList loadInBackground() {
-                String sortingOrder = bundle.getString(SUNSHINE_LOADER_EXTRA);
+                String sortingOrder = bundle.getString(MOVIES_LOADER_EXTRA);
                 if (sortingOrder == null ){
                     return null;
                 }
@@ -290,7 +275,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 if (bundle == null) {
                     return;
                 }
-                //mRecyclerView.setVisibility(View.VISIBLE);
                 mLoadingIndicator.setVisibility(View.VISIBLE);
             }
         };
@@ -301,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (data != null) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             mRecyclerView.setVisibility(View.VISIBLE);
-            showMoviesDataView();
+            showMoviesRecyclerView();
             mMovieAdapter.setMovieData(data);
             mMovieAdapter.notifyDataSetChanged();
         } else {

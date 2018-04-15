@@ -35,7 +35,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@android:drawable/btn_star"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            android:layout_marginRight="32dp" />
 
         <TextView
             android:id="@+id/rating"
@@ -91,7 +92,8 @@
             android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/overview" />
+            app:layout_constraintTop_toBottomOf="@+id/overview"
+            android:layout_marginLeft="1dp" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_reviews"

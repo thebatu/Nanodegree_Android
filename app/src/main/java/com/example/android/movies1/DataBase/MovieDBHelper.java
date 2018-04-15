@@ -28,7 +28,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
                 + MovieContract.FavoriteEntry.COLUMN_RATING + " TEXT NOT NULL, "
                 + MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, "
                 + MovieContract.FavoriteEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, "
-                + MovieContract.FavoriteEntry.BACKDROP_PATH + " TEXT NOT NULL "
+                + MovieContract.FavoriteEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL "
                 + " ); ";
         db.execSQL(SQL_CREATE_FAVORITE_ENTRIES);
     }

@@ -100,8 +100,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case TRAILER_ID: {
                 int layoutForTrailer = R.layout.activity_trailer;
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
-                boolean shouldAttachToParentImmediately = false;
-                View view = layoutInflater.inflate(layoutForTrailer, parent, shouldAttachToParentImmediately);
+                View view = layoutInflater.inflate(layoutForTrailer, parent, false);
                 return new TrailerViewHolder(view);
 
             }

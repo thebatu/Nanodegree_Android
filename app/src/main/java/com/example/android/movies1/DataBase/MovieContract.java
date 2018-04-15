@@ -37,7 +37,7 @@ public class MovieContract {
         public static final String COLUMN_RATING = "movie_rating";
         public static final String COLUMN_RELEASE_DATE = "movie_release_date";
         public static final String COLUMN_OVERVIEW = "movie_overview";
-        public static final String BACKDROP_PATH = "poster_path";
+        public static final String COLUMN_BACKDROP_PATH = "poster_path";
 
         public static Uri builtFavoriteUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

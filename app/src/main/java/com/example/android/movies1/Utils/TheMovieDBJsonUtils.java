@@ -18,9 +18,6 @@ import java.util.ArrayList;
     private static final String TAG = TheMovieDBJsonUtils.class.getSimpleName();
     private static final String IMG_URL = "http://image.tmdb.org/t/p/";
 
-//    public TheMovieDBJsonUtils(){
-//    }
-
     public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieJsonString)
             throws JSONException {
 
