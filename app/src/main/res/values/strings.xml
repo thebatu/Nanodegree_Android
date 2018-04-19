@@ -9,5 +9,6 @@
     <string name="review">Reviews</string>
     <string name="content">Content</string>
     <string name="favorite_movies">Favorite Movies</string>
+    <string name="movieType">popular</string>
 
 </resources>

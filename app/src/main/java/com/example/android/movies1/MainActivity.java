@@ -36,28 +36,29 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
-    private  static final int FAV_LOADER_ID = 666;
     private ProgressBar mLoadingIndicator;
+    private  static final int FAV_LOADER_ID = 666;
     private final int MOVIES_LOADER = 22;
     private static final String MOVIES_LOADER_EXTRA = "query";
     private static final String BUNDLE_INSTANCE = "HUMBLE_BUNDLE";
     private String movieType = "popular";
     private ArrayList<Movie> movieList;
-    private RecyclerView mFavRecyclerView;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        //movieType favorite/popular/top rated
         outState.putString(BUNDLE_INSTANCE,movieType);
+        //save movies list to pass it to MoviesAdapter for on rotate case
         outState.putParcelableArrayList("movies", movieList);
-        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mFavRecyclerView = findViewById(R.id.rv_favMoviesMovies);
+        //mFavRecyclerView = findViewById(R.id.rv_favMoviesMovies);
         mRecyclerView =  findViewById(R.id.rv_mainMovies);
         errText = findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
@@ -65,24 +66,51 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, 2);
 
-        if(savedInstanceState != null)
-            if (savedInstanceState.containsKey(BUNDLE_INSTANCE)){
+        //check if movie type (popular or highest rated) exists
+        if(savedInstanceState != null) {
+            if (savedInstanceState.containsKey(BUNDLE_INSTANCE)) {
                 movieType = savedInstanceState.getString(BUNDLE_INSTANCE);
+
+                switch (movieType) {
+                    case "favorite":
+                        movieList = savedInstanceState.getParcelableArrayList("favorite_movie_list");
+                        mRecyclerView.setLayoutManager(layoutManager);
+                        mRecyclerView.setHasFixedSize(true);
+                        ArrayList fav_movies  = savedInstanceState.getParcelableArrayList("movies");
+                        mMovieAdapter = new MovieAdapter(getApplicationContext(), this , fav_movies);
+                        mRecyclerView.setAdapter(mMovieAdapter);
+                        favoriteLoader();
+                        break;
+
+                    default:
+                        mRecyclerView.setLayoutManager(layoutManager);
+                        mRecyclerView.setHasFixedSize(true);
+                        loadMoviesData();
+                        mMovieAdapter = new MovieAdapter(getApplicationContext(), this);
+                        mRecyclerView.setAdapter(mMovieAdapter);
+
+                }
+
             }
 
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
 
-        loadMoviesData(movieType);
-        mMovieAdapter = new MovieAdapter(getApplicationContext(),this);
-        mRecyclerView.setAdapter(mMovieAdapter);
+        }
+        else {
+
+            mRecyclerView.setLayoutManager(layoutManager);
+            mRecyclerView.setHasFixedSize(true);
+            loadMoviesData();
+            mMovieAdapter = new MovieAdapter(getApplicationContext(), this);
+            mRecyclerView.setAdapter(mMovieAdapter);
+
+        }
 
     }
 
-    private void loadMoviesData(String s) {
+    private void loadMoviesData() {
 
         Bundle queryBundle = new Bundle();
-        queryBundle.putString(MOVIES_LOADER_EXTRA,movieType);
+        queryBundle.putString(MOVIES_LOADER_EXTRA, movieType);
 
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<String> MoviesSearchLoader = loaderManager.getLoader(MOVIES_LOADER);
@@ -116,14 +144,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (menuItemSelected == R.id.top_rated){
             movieType = "top_rated";
             showMoviesRecyclerView();
-            loadMoviesData(movieType);
+            loadMoviesData();
             return true;
 
         }else if (menuItemSelected == R.id.popular){
 
             movieType = "popular";
             showMoviesRecyclerView();
-            loadMoviesData(movieType);
+            loadMoviesData();
             return true;
         }else if  (menuItemSelected == R.id.favorite_movies) {
             movieType = "favorite";
@@ -211,6 +239,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     }
                     mMovieAdapter.clearMoviePosterData();
                     mMovieAdapter.setMovieData(movieList);
+
+//                    Bundle queryBundle = new Bundle();
+//                    queryBundle.putParcelableArrayList("favorite_movie_list", movieList);
+
+
                     Log.v(TAG, "Favorites List have data");
                 }
             }else {

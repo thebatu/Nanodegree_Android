@@ -33,6 +33,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 //        mMovies = movies;
     }
 
+    public MovieAdapter (Context con, MovieClickListener listener, ArrayList movies){
+        mContext = con;
+        mOnMovieClickListener = listener;
+        mMovies = movies;
+    }
+
     public interface MovieClickListener{
         void onMovieItemClick (int clickedItemPosition, Movie clickedOnMovie);
     }
