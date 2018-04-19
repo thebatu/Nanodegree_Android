@@ -42,7 +42,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.DetailsClickListener, DetailsAdapter.ReviewAdapterOnClickHandler {
+
+/**
+ * Class to display a clicked on movie operations
+ */
+public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.DetailsClickListener,
+        DetailsAdapter.ReviewAdapterOnClickHandler {
 
     private String TAG = MovieDetailsPage.class.getSimpleName();
     private RecyclerView dRecyclerView;

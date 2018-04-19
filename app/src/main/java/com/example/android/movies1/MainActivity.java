@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         LoaderManager.LoaderCallbacks<ArrayList> {
 
     private final String TAG = MainActivity.class.getSimpleName();
-    private RecyclerView mRecyclerView;
+    private RecyclerView MoviesRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
     private ProgressBar mLoadingIndicator;
@@ -59,14 +59,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
 
         //mFavRecyclerView = findViewById(R.id.rv_favMoviesMovies);
-        mRecyclerView =  findViewById(R.id.rv_mainMovies);
+
+        MoviesRecyclerView =  findViewById(R.id.rv_mainMovies);
         errText = findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, 2);
 
-        //check if movie type (popular or highest rated) exists
+        //check if movie type favorite exists if it does load favorite movies list from savedInstantState
         if(savedInstanceState != null) {
             if (savedInstanceState.containsKey(BUNDLE_INSTANCE)) {
                 movieType = savedInstanceState.getString(BUNDLE_INSTANCE);
@@ -74,39 +75,35 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 switch (movieType) {
                     case "favorite":
                         movieList = savedInstanceState.getParcelableArrayList("favorite_movie_list");
-                        mRecyclerView.setLayoutManager(layoutManager);
-                        mRecyclerView.setHasFixedSize(true);
+                        MoviesRecyclerView.setLayoutManager(layoutManager);
+                        MoviesRecyclerView.setHasFixedSize(true);
                         ArrayList fav_movies  = savedInstanceState.getParcelableArrayList("movies");
                         mMovieAdapter = new MovieAdapter(getApplicationContext(), this , fav_movies);
-                        mRecyclerView.setAdapter(mMovieAdapter);
+                        MoviesRecyclerView.setAdapter(mMovieAdapter);
                         favoriteLoader();
                         break;
 
                     default:
-                        mRecyclerView.setLayoutManager(layoutManager);
-                        mRecyclerView.setHasFixedSize(true);
+                        MoviesRecyclerView.setLayoutManager(layoutManager);
+                        MoviesRecyclerView.setHasFixedSize(true);
                         loadMoviesData();
                         mMovieAdapter = new MovieAdapter(getApplicationContext(), this);
-                        mRecyclerView.setAdapter(mMovieAdapter);
-
+                        MoviesRecyclerView.setAdapter(mMovieAdapter);
                 }
-
             }
-
-
         }
         else {
-
-            mRecyclerView.setLayoutManager(layoutManager);
-            mRecyclerView.setHasFixedSize(true);
+            MoviesRecyclerView.setLayoutManager(layoutManager);
+            MoviesRecyclerView.setHasFixedSize(true);
             loadMoviesData();
             mMovieAdapter = new MovieAdapter(getApplicationContext(), this);
-            mRecyclerView.setAdapter(mMovieAdapter);
-
+            MoviesRecyclerView.setAdapter(mMovieAdapter);
         }
-
     }
 
+    /**
+     * initiate popular or top_rated movies loader
+     */
     private void loadMoviesData() {
 
         Bundle queryBundle = new Bundle();
@@ -121,41 +118,59 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     }
 
-    private void showMoviesRecyclerView() {
+    /**
+     * show moviesView and hide loading indicator and errMsg
+     */
+    private void setMoviesRecyclerViewVisibility() {
         errText.setVisibility(View.GONE);
         mLoadingIndicator.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
+        MoviesRecyclerView.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * hide moviesView and show errMsg
+     */
     private void showErrorMessage(){
         errText.setVisibility(View.VISIBLE);
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        MoviesRecyclerView.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     *
+     * @param menu menu
+     * @return true
+     * inflate main menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    /**
+     * display selected movie type
+     * @param item  selected movie type
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int menuItemSelected = item.getItemId();
         if (menuItemSelected == R.id.top_rated){
             movieType = "top_rated";
-            showMoviesRecyclerView();
+            setMoviesRecyclerViewVisibility();
             loadMoviesData();
             return true;
 
         }else if (menuItemSelected == R.id.popular){
 
             movieType = "popular";
-            showMoviesRecyclerView();
+            setMoviesRecyclerViewVisibility();
             loadMoviesData();
             return true;
+
         }else if  (menuItemSelected == R.id.favorite_movies) {
             movieType = "favorite";
-            showMoviesRecyclerView();
+            setMoviesRecyclerViewVisibility();
             favoriteLoader();
             return true;
 
@@ -163,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * load favorite movies type.
+     */
     private void favoriteLoader() {
         getSupportLoaderManager().initLoader(FAV_LOADER_ID, null, favoriteLoader).forceLoad();
     }
@@ -211,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
             mMovieAdapter.setMovieData(null);
-
             movieList = new ArrayList<>();
 
             if (loader.getId() == FAV_LOADER_ID){
@@ -240,10 +257,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     mMovieAdapter.clearMoviePosterData();
                     mMovieAdapter.setMovieData(movieList);
 
-//                    Bundle queryBundle = new Bundle();
-//                    queryBundle.putParcelableArrayList("favorite_movie_list", movieList);
-
-
                     Log.v(TAG, "Favorites List have data");
                 }
             }else {
@@ -262,6 +275,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
     };
 
+    /**
+     * call back for on a movie click
+     * @param clickedItemPosition
+     * @param clickedOnMovie
+     */
     @Override
     public void onMovieItemClick(int clickedItemPosition, Movie clickedOnMovie) {
         Intent intent = new Intent(MainActivity.this, MovieDetailsPage.class);
@@ -270,6 +288,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
+    /**
+     * Load top_rated ot favorite movies from a network call and pass the list to the adapter to display
+     * @param i
+     * @param bundle
+     * @return
+     */
     @SuppressLint("StaticFieldLeak")
     @Override
     public Loader<ArrayList> onCreateLoader(int i, final Bundle bundle) {
@@ -317,8 +341,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onLoadFinished(Loader<ArrayList> loader, ArrayList data) {
         if (data != null) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-            showMoviesRecyclerView();
+            MoviesRecyclerView.setVisibility(View.VISIBLE);
+            setMoviesRecyclerViewVisibility();
             mMovieAdapter.setMovieData(data);
             mMovieAdapter.notifyDataSetChanged();
         } else {
