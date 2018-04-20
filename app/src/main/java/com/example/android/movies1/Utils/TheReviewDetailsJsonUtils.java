@@ -2,7 +2,7 @@ package com.example.android.movies1.Utils;
 
 import android.util.Log;
 
-import com.example.android.movies1.Review;
+import com.example.android.movies1.Models.Review;
 
 import org.json.JSONArray;
 import org.json.JSONException;

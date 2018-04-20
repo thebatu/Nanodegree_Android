@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.android.movies1.Models.Review;
+
 public class ReviewContent extends AppCompatActivity {
 
     TextView content;

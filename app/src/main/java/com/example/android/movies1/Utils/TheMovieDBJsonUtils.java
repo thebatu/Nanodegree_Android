@@ -2,7 +2,7 @@ package com.example.android.movies1.Utils;
 
 import android.content.Context;
 import android.util.Log;
-import com.example.android.movies1.Movie;
+import com.example.android.movies1.Models.Movie;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,9 +17,6 @@ import java.util.ArrayList;
  public class TheMovieDBJsonUtils {
     private static final String TAG = TheMovieDBJsonUtils.class.getSimpleName();
     private static final String IMG_URL = "http://image.tmdb.org/t/p/";
-
-//    public TheMovieDBJsonUtils(){
-//    }
 
     public static ArrayList simpleJsonMovieDataStringsFromJson(Context context, String movieJsonString)
             throws JSONException {

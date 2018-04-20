@@ -1,4 +1,4 @@
-package com.example.android.movies1;
+package com.example.android.movies1.Adapers;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.movies1.R;
+import com.example.android.movies1.Models.Review;
+import com.example.android.movies1.Models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -97,8 +100,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case TRAILER_ID: {
                 int layoutForTrailer = R.layout.activity_trailer;
                 LayoutInflater layoutInflater = LayoutInflater.from(context);
-                boolean shouldAttachToParentImmediately = false;
-                View view = layoutInflater.inflate(layoutForTrailer, parent, shouldAttachToParentImmediately);
+                View view = layoutInflater.inflate(layoutForTrailer, parent, false);
                 return new TrailerViewHolder(view);
 
             }
@@ -158,8 +160,6 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             return REVIEWS_ID;
         }
-
-
     }
 
 

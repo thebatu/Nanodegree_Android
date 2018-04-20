@@ -113,6 +113,10 @@ public class MovieContentProvider extends ContentProvider {
         if (movieTitle == null) {
             throw new IllegalArgumentException("Movie title is empty");
         }
+        String posterPath = contentValues.getAsString(MovieContract.FavoriteEntry.COLUMN_BACKDROP_PATH);
+        if (posterPath == null) {
+            throw new IllegalArgumentException("posterPath is empty");
+        }
         String movieId = contentValues.getAsString(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID);
         if (movieId == null) {
             throw new IllegalArgumentException("MovieID is empty");

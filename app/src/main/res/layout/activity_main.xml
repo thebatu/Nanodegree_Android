@@ -9,11 +9,19 @@
     tools:context="com.example.android.movies1.MainActivity">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_mainMovies"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="22sp"
-        android:id="@+id/rv_mainMovies"
     />
+
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/rv_favMoviesMovies"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textSize="22sp"-->
+        <!--android:layout_toRightOf="@id/rv_mainMovies"-->
+        <!--/>-->
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -35,5 +43,12 @@
                 android:visibility="gone"
                 />
     </FrameLayout>
+
+    <!--<GridView android:id="@+id/gvMain"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:verticalSpacing="0dp"-->
+        <!--android:numColumns="auto_fit"-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"/>-->
 
 </RelativeLayout>

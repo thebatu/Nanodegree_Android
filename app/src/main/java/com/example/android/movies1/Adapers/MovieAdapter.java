@@ -1,4 +1,4 @@
-package com.example.android.movies1;
+package com.example.android.movies1.Adapers;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.movies1.Models.Movie;
+import com.example.android.movies1.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -29,6 +31,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         mContext = con;
         mOnMovieClickListener = listener;
 //        mMovies = movies;
+    }
+
+    public MovieAdapter (Context con, MovieClickListener listener, ArrayList movies){
+        mContext = con;
+        mOnMovieClickListener = listener;
+        mMovies = movies;
     }
 
     public interface MovieClickListener{
@@ -79,6 +87,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     }
 
+    public void clearMoviePosterData() {
+        mMovies.clear();
+        notifyDataSetChanged();
+    }
+
     //-----------------------
     public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView listMovieNumberView;
@@ -96,5 +109,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             Movie clickedOnMovie = mMovies.get(clickedPosition);
             mOnMovieClickListener.onMovieItemClick(clickedPosition, clickedOnMovie);
         }
+
     }
 }
