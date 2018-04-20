@@ -16,22 +16,32 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+/**
+ * recycler to display movie details when clicked on a movie (popular, top_rated)
+ */
 public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private static final String YOUTUBE_IMG_URL = "https://img.youtube.com/vi/";
     String finalUrl = "/0.jpg";
     public final int TRAILER_ID = 0;
     public final int REVIEWS_ID = 1;
-    private DetailsClickListener mOnDetailsClickListener;
+    private MovieVideoClickListener mOnDetailsClickListener;
     private ReviewAdapterOnClickHandler mOnClick;
     private Context context;
-    TextView detailsTextView;
     private ArrayList<Trailer> trailer;
     private ArrayList<Review> review;
     private ArrayList<Object> objects;
 
 
-    public DetailsAdapter(DetailsClickListener mOnDetailsClickListener, ArrayList<Trailer> trailerArrayList,
+    /**
+     * Constructor
+     * @param mOnDetailsClickListener   click listener
+     * @param trailerArrayList  trailerArrayList
+     * @param reviewArrayList   reviewArrayList
+     * @param mOnClick  mOnClick
+     * @param objects   objects
+     */
+    public DetailsAdapter(MovieVideoClickListener mOnDetailsClickListener, ArrayList<Trailer> trailerArrayList,
                           ArrayList<Review> reviewArrayList, ReviewAdapterOnClickHandler mOnClick, ArrayList<Object> objects) {
 
         this.trailer = trailerArrayList;
@@ -43,25 +53,34 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-    public interface DetailsClickListener {
-        void onListItemClick(int clickedItemPosition);
+    /**
+     * Interface for click on a movie
+     */
+    public interface MovieVideoClickListener {
+        void onClickOnMovieVideo(int clickedItemPosition);
     }
 
-
+    /**
+     * Interface for click on a review
+     */
     public interface ReviewAdapterOnClickHandler{
-        void onClick(int click);
+        void onClickOnReview(int click);
     }
 
 
+    /**
+     *Inner class for trailers
+     *
+     */
     public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView tv_trailer,reviews;
         public final ImageView icon;
 
         public TrailerViewHolder(View itemView) {
             super(itemView);
-            tv_trailer = (TextView) itemView.findViewById(R.id.trailer_name_view);
-            icon = (ImageView) itemView.findViewById(R.id.iv);
-            reviews= (TextView) itemView.findViewById(R.id.reviews);
+            tv_trailer =  itemView.findViewById(R.id.trailer_name_view);
+            icon = itemView.findViewById(R.id.iv);
+            reviews=  itemView.findViewById(R.id.reviews);
 
             itemView.setOnClickListener(this);
         }
@@ -69,11 +88,13 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            mOnDetailsClickListener.onListItemClick(clickedPosition);
+            mOnDetailsClickListener.onClickOnMovieVideo(clickedPosition);
         }
     }
 
-
+    /**
+     * inner class for reviews
+     */
     public class ReviewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView tv_author;
 
@@ -84,14 +105,22 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             itemView.setOnClickListener(this);
         }
 
+
+        /**
+         * get the position of the review - trailer size [r,r,r,r,r,t,t,t,t,t,t]
+         * @param v
+         */
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition() - trailer.size();
-            mOnClick.onClick(clickedPosition);
+            mOnClick.onClickOnReview(clickedPosition);
         }
     }
 
 
+    /**
+     * depending on the viewType(trailer or review) assign the layout and return it
+     */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -111,12 +140,12 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 return new ReviewsViewHolder(view);
             }
         }
-
-
-
         return null;
     }
 
+    /**
+     *
+     */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (holder.getItemViewType()) {
@@ -139,6 +168,9 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
+    /**
+     *  Heterogeneous RecyclerView will return total number of items of trails + reviews.
+     */
     @Override
     public int getItemCount() {
 //        if (trailer.size() != 0 &&  review.size() !=0 && trailer != null && review != null){
