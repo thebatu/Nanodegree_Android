@@ -8,6 +8,10 @@ import android.widget.TextView;
 
 import com.example.android.movies1.Models.Review;
 
+
+/**
+ * display individual review
+ */
 public class ReviewContent extends AppCompatActivity {
 
     TextView content;

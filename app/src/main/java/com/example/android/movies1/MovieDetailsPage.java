@@ -46,11 +46,11 @@ import java.util.ArrayList;
 /**
  * Class to display a clicked on movie operations
  */
-public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.DetailsClickListener,
+public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapter.MovieVideoClickListener,
         DetailsAdapter.ReviewAdapterOnClickHandler {
 
     private String TAG = MovieDetailsPage.class.getSimpleName();
-    private RecyclerView dRecyclerView;
+    private RecyclerView movie_details_recuclerVRecyclerView;
     private DetailsAdapter mDetailsAdapter;
     private static final String TRAILER_DETAILS_EXTRA = "trailer_query";
     private static final String REVIEW_DETAILS_EXTRA = "review_query";
@@ -81,16 +81,20 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         setContentView(R.layout.activity_movie_details_page);
         context = this.getApplicationContext();
 
-        dRecyclerView = findViewById(R.id.rv_movie_details);
+        movie_details_recuclerVRecyclerView= findViewById(R.id.rv_movie_details);
 
         movieTitle = findViewById(R.id.title);
         movieImage = findViewById(R.id.poster_image);
         movieOverview = findViewById(R.id.overview);
         movieDate = findViewById(R.id.date);
         movieRating = findViewById(R.id.rating);
+        //star for favoring a movie
         star = findViewById(R.id.star);
 
+
+        //array list to hold trails for movies
         trailerArrayList = new ArrayList<>();
+
         objectsArrayList = new ArrayList<>();
 
 
@@ -122,19 +126,26 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
             LinearLayoutManager dLayoutManager
                     = new LinearLayoutManager(this);
 
-            dRecyclerView.setLayoutManager(dLayoutManager);
-            dRecyclerView.setHasFixedSize(true);
+            movie_details_recuclerVRecyclerView.setLayoutManager(dLayoutManager);
+            movie_details_recuclerVRecyclerView.setHasFixedSize(true);
 
+
+            //activate the loader for reviews then for trailers
             activateReviewLoader(id);
             activateTrailersLoader(id);
 
+            //instantiate a movie details adapter
             mDetailsAdapter = new DetailsAdapter(this,trailerArrayList,
                     reviewArrayList, this, objectsArrayList  );
-            dRecyclerView.setAdapter(mDetailsAdapter);
 
+            //set the adapter for movie details
+            movie_details_recuclerVRecyclerView.setAdapter(mDetailsAdapter);
+
+            //check if movie is in DB
             FetchQueryOfDatabase task = new FetchQueryOfDatabase();
             task.execute();
 
+            //setListener to fav or unfav a movie
             star.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
@@ -145,6 +156,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
     }
 
+    //change the color of the fav star
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void changeStarColor(View v) {
         Toast.makeText(getApplicationContext(), "Movie Favorited", Toast.LENGTH_SHORT).show();
@@ -155,6 +167,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }
     }
 
+    //make a movie fav
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void makeFavorite() {
         isFavorite = true;
@@ -162,11 +175,14 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         addToDBMakeFav();
     }
 
+    //change the color of the star to golden
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void makeStarGolden(){
         isFavorite = true;
         star.setColorFilter(getColor(R.color.Golden));
     }
+
+    //change the color of the star to grey
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void makeStarGrey(){
         isFavorite = false;
@@ -174,6 +190,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
     }
 
+    //unfav a movie
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void makeUnfavorite() {
         isFavorite = false;
@@ -181,6 +198,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         deleteFromDB();
     }
 
+    //delete a movie from DB
     private void deleteFromDB() {
 
         ContentResolver resolver = getContentResolver();
@@ -211,6 +229,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }
     }
 
+    //add a fav movie to DB
     private void addToDBMakeFav() {
         if (movieTitle == null || movieDate == null ||
                 movieRating == null || movieOverview == null) {
@@ -254,6 +273,10 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
 
     ///----------------------------------------------------------------------------------
+
+    /**
+     * check if a movie is in DB in order to fav or unfav it
+     */
     private class FetchQueryOfDatabase extends AsyncTask<Void, Void, Cursor> {
 
         Movie item = getIntent().getParcelableExtra("movie_obj");
@@ -381,7 +404,6 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
                             e.printStackTrace();
                         }
 
-                        //https://api.themoviedb.org/3/movie/346364/videos?api_key=18e23d5378804a57dc5743d12472408f&language=en-US
                         return reviews_josn;
 
                     } catch (IOException e) {
@@ -414,7 +436,7 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
 
     //--------------------------------------------------------------------------------------------
-
+    //Get the details of a single movie trailers from IMDB
     public LoaderManager.LoaderCallbacks<ArrayList> trailerLoaderListener = new LoaderManager.LoaderCallbacks<ArrayList>() {
 
         @SuppressLint("StaticFieldLeak")
@@ -423,16 +445,13 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
                 @Override
                 protected void onStartLoading() {
                     super.onStartLoading();
-                    Log.d(TAG, "onStartLoading: Rick");
-                    int ss = bundle.getInt(TRAILER_DETAILS_EXTRA);
-                    Log.d(TAG, "onStartLoading: ");
+                    //int ss = bundle.getInt(TRAILER_DETAILS_EXTRA);
 
                 }
 
                 @Override
                 public ArrayList loadInBackground() {
 
-                    Log.d(TAG, "loadinBackground: RICKKKKK ");
                     int movie_id = bundle.getInt(TRAILER_DETAILS_EXTRA);
                     if (movie_id < 0) {
                         return null;
@@ -483,8 +502,12 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         //--------------------------------------------------------------------------------------------
     };
 
+    /**
+     * Click listener for DetailsAdapter
+     * @param clickedItemPosition   clicked on movie trailer
+     */
     @Override
-    public void onListItemClick(int clickedItemPosition) {
+    public void onClickOnMovieVideo(int clickedItemPosition) {
         trailers = trailerArrayList.get(clickedItemPosition);
         String urlAsString = "https://www.youtube.com/watch?v=";
         Uri webPage = Uri.parse(urlAsString.concat(trailers.getKey()));
@@ -494,9 +517,13 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
         }
     }
 
+    /**
+     * handle a click on a movie review
+     * @param clickedPosition   clicked on review
+     */
     @Override
-    public void onClick(int click) {
-        reviews = reviewArrayList.get(click);
+    public void onClickOnReview(int clickedPosition) {
+        reviews = reviewArrayList.get(clickedPosition);
         Intent i = new Intent(this, ReviewContent.class);
         i.putExtra("reviews",  reviews);
         startActivity(i);

@@ -14,31 +14,42 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Recycler to process popular movies, favorite movies or top rated.
+ */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-    ImageView mImageView;
-    private int mNumberItems;
 
     private List<Movie> mMovies;
     private Context mContext;
-
     private final MovieClickListener mOnMovieClickListener;
-
     private Context getContext() {
         return mContext;
     }
 
+    /**
+     * @param con context
+     * @param listener listener
+     */
     public MovieAdapter (Context con, MovieClickListener listener){
         mContext = con;
         mOnMovieClickListener = listener;
-//        mMovies = movies;
     }
 
+    /**
+     *
+     * @param con context
+     * @param listener  clickListener
+     * @param movies    favorite movies to display
+     */
     public MovieAdapter (Context con, MovieClickListener listener, ArrayList movies){
         mContext = con;
         mOnMovieClickListener = listener;
         mMovies = movies;
     }
 
+    /**
+     * click listener
+     */
     public interface MovieClickListener{
         void onMovieItemClick (int clickedItemPosition, Movie clickedOnMovie);
     }
