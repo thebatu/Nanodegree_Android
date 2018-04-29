@@ -9,6 +9,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private static final String BUNDLE_INSTANCE = "HUMBLE_BUNDLE";
     private String movieType = "popular";
     private ArrayList<Movie> movieList;
+    public static int lastFirstVisiblePosition;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         outState.putString(BUNDLE_INSTANCE,movieType);
         //save movies list to pass it to MoviesAdapter for on rotate case
         outState.putParcelableArrayList("movies", movieList);
+
     }
 
     @Override
@@ -256,6 +259,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     }
                     mMovieAdapter.clearMoviePosterData();
                     mMovieAdapter.setMovieData(movieList);
+                    //restore scroll position on orientation change
+                    ((LinearLayoutManager) MoviesRecyclerView.getLayoutManager()).scrollToPositionWithOffset(lastFirstVisiblePosition,0);
+
 
                     Log.v(TAG, "Favorites List have data");
                 }
@@ -344,6 +350,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             MoviesRecyclerView.setVisibility(View.VISIBLE);
             setMoviesRecyclerViewVisibility();
             mMovieAdapter.setMovieData(data);
+            //restore scroll position on orientation change
+            ((LinearLayoutManager) MoviesRecyclerView.getLayoutManager()).scrollToPositionWithOffset(lastFirstVisiblePosition,0);
             mMovieAdapter.notifyDataSetChanged();
         } else {
             showErrorMessage();
@@ -352,6 +360,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public void onLoaderReset(Loader<ArrayList> loader) {
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //save last scroll position to be restored on orientation change
+        lastFirstVisiblePosition = ((LinearLayoutManager)MoviesRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //restore scroll position on orientation change
+        ((LinearLayoutManager) MoviesRecyclerView.getLayoutManager()).scrollToPositionWithOffset(lastFirstVisiblePosition,0);
+
 
     }
 
