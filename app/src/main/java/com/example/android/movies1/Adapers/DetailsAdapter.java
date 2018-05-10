@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.movies1.R;
 import com.example.android.movies1.Models.Review;
 import com.example.android.movies1.Models.Trailer;
+import com.example.android.movies1.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
  * recycler to display movie details when clicked on a movie (popular, top_rated)
  */
 public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
 
     private static final String YOUTUBE_IMG_URL = "https://img.youtube.com/vi/";
     String finalUrl = "/0.jpg";
@@ -31,6 +32,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<Trailer> trailer;
     private ArrayList<Review> review;
     private ArrayList<Object> objects;
+
 
 
     /**
@@ -51,7 +53,6 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.objects = objects;
 
     }
-
 
     /**
      * Interface for click on a movie
@@ -162,7 +163,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 break;
             default:
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Error in DetailsAdapter", Toast.LENGTH_LONG).show();
                 break;
         }
 

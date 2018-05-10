@@ -1,6 +1,7 @@
 package com.example.android.movies1;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private RecyclerView MoviesRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView errText;
-    private ProgressBar mLoadingIndicator;
+    private static ProgressBar mLoadingIndicator;
     private  static final int FAV_LOADER_ID = 666;
     private final int MOVIES_LOADER = 22;
     private static final String MOVIES_LOADER_EXTRA = "query";
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+
 
         //mFavRecyclerView = findViewById(R.id.rv_favMoviesMovies);
 
@@ -98,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         else {
             MoviesRecyclerView.setLayoutManager(layoutManager);
             MoviesRecyclerView.setHasFixedSize(true);
-            loadMoviesData();
+//            loadMoviesData();
             mMovieAdapter = new MovieAdapter(getApplicationContext(), this);
             MoviesRecyclerView.setAdapter(mMovieAdapter);
         }
@@ -119,6 +123,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else {
             loaderManager.restartLoader(MOVIES_LOADER, queryBundle, this).forceLoad();
         }
+    }
+
+
+    public static void hideSpinner(){
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -231,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
             mMovieAdapter.setMovieData(null);
             movieList = new ArrayList<>();
 
@@ -293,6 +303,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         startActivity(intent);
 
     }
+
+
 
     /**
      * Load top_rated ot favorite movies from a network call and pass the list to the adapter to display
@@ -376,7 +388,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onResume();
         //restore scroll position on orientation change
         ((LinearLayoutManager) MoviesRecyclerView.getLayoutManager()).scrollToPositionWithOffset(lastFirstVisiblePosition,0);
-
+        if (movieType == "favorite") {
+            favoriteLoader();
+        }else{
+            loadMoviesData();
+        }
 
     }
 
