@@ -387,12 +387,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onResume() {
         super.onResume();
         //restore scroll position on orientation change
-        ((LinearLayoutManager) MoviesRecyclerView.getLayoutManager()).scrollToPositionWithOffset(lastFirstVisiblePosition,0);
         if (movieType == "favorite") {
             favoriteLoader();
+
         }else{
             loadMoviesData();
+
         }
+
 
     }
 
