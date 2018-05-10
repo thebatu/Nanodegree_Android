@@ -339,10 +339,9 @@ public class MovieDetailsPage extends AppCompatActivity implements DetailsAdapte
 
     ///----------------------------------------------------------------------------------
 
-
     /*
-        int id --> the ID of the movie clicked on
-     */
+            int id --> the ID of the movie clicked on
+         */
     private void activateTrailersLoader(int id) {
 
         Bundle queryTrailerBundle = new Bundle();
